@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>TrustVault — Secure Document Sharing with Real Audit Trail</title>
+  <meta name="description" content="High-assurance document platform where the wrong person can never read the file, and you can cryptographically prove who read it.">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'><path d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.66 0 3 1.34 3 3 0 1.13-.64 2.11-1.57 2.62v2.38h-2.86v-2.38c-.93-.51-1.57-1.49-1.57-2.62 0-1.66 1.34-3 3-3z'/></svg>">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-nav" id="nav-bar" style="display: none;">
+    <a href="#" class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-title">TrustVault</div>
+      </div>
+      <span class="brand-badge">AES-256-GCM • SHA-256 CHAIN</span>
+    </a>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-links">
+      <button class="nav-tab active" data-tab="documents">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Vault Documents
+      </button>
+      <button class="nav-tab" data-tab="audit">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Audit Trail & Proof
+      </button>
+      <button class="nav-tab" data-tab="admin" id="tab-admin" style="display: none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        User Clearance
+      </button>
+    </nav>
+
+    <!-- User Profile & Action -->
+    <div class="nav-user">
+      <div class="user-badge">
+        <div class="user-avatar" id="nav-user-avatar">A</div>
+        <div class="user-meta">
+          <span class="user-name" id="nav-user-name">Alice Wright</span>
+          <span class="user-role-tag" id="nav-user-role">OWNER</span>
+        </div>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btn-logout" title="Sign out and revoke session">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Exit
+      </button>
+    </div>
+  </header>
+
+  <!-- ════════ VIEW 1: Authentication / Login ════════ -->
+  <main class="auth-wrapper" id="auth-view">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="brand-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <h2>TrustVault</h2>
+        <p>Zero-Trust Cryptographic Document Sharing</p>
+      </div>
+
+      <!-- Alert Box -->
+      <div id="login-alert" class="toast danger" style="display: none; margin-bottom: 1.25rem;"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Cryptographic Identity (Email)</label>
+          <input type="email" id="login-email" class="form-input" placeholder="name@company.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Master Clearance Key (Password)</label>
+          <div class="input-container">
+            <input type="password" id="login-password" class="form-input" placeholder="Enter high-entropy password" required autocomplete="current-password">
+            <button type="button" class="input-icon-btn" id="toggle-password-btn" title="Toggle password visibility">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+
+          <!-- Live Password Strength Meter -->
+          <div class="password-meter">
+            <div class="meter-bar">
+              <div class="meter-fill" id="meter-fill"></div>
+            </div>
+            <div class="password-rules">
+              <div class="rule-item" id="rule-len"><span class="rule-icon">○</span> 10+ characters</div>
+              <div class="rule-item" id="rule-upper"><span class="rule-icon">○</span> 1 uppercase</div>
+              <div class="rule-item" id="rule-num"><span class="rule-icon">○</span> 1 digit</div>
+              <div class="rule-item" id="rule-special"><span class="rule-icon">○</span> 1 symbol (!@#$)</div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="login-submit-btn" style="width: 100%; margin-top: 1rem; padding: 0.8rem;">
+          <span>Authenticate & Enter Vault</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </form>
+
+      <!-- One-Click Demo Personas for Judges -->
+      <div class="persona-selector">
+        <div class="persona-title">
+          <span>Evaluator Quick-Fill Personas</span>
+          <span style="color: var(--cyan); font-size: 0.7rem;">Click to Switch</span>
+        </div>
+        <div class="persona-grid">
+          <button type="button" class="persona-card" onclick="selectPersona('admin@trustvault.internal', 'AdminPass123!@#')">
+            <div class="persona-role text-primary">🛡️ Administrator</div>
+            <div class="persona-name">Eleanor Vance (CSO)</div>
+            <div style="font-size: 0.68rem; color: var(--text-dim);">Full audit & system view</div>
+          </button>
+
+          <button type="button" class="persona-card" onclick="selectPersona('alice@trustvault.internal', 'OwnerPass123!@#')">
+            <div class="persona-role text-success">📁 Document Owner</div>
+            <div class="persona-name">Alice Wright</div>
+            <div style="font-size: 0.68rem; color: var(--text-dim);">Uploads & grants access</div>
+          </button>
+
+          <button type="button" class="persona-card" onclick="selectPersona('bob@trustvault.internal', 'ViewerPass123!@#')">
+            <div class="persona-role text-warning">👁️ Internal Viewer</div>
+            <div class="persona-name">Bob Jenkins</div>
+            <div style="font-size: 0.68rem; color: var(--text-dim);">Restricted reader</div>
+          </button>
+
+          <button type="button" class="persona-card" onclick="selectPersona('charlie@client.corp', 'PartnerPass123!@#')">
+            <div class="persona-role" style="color: #c084fc;">⚖️ External Counsel</div>
+            <div class="persona-name">Charlie Zhang</div>
+            <div style="font-size: 0.68rem; color: var(--text-dim);">Contract editor</div>
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.75rem; color: var(--text-dim);">
+        Protected by Argon2id memory-hard hashing, sliding-window rate limiting, and tamper-evident audit chaining.
+      </div>
+    </div>
+  </main>
+
+  <!-- ════════ VIEW 2: Dashboard Experience ════════ -->
+  <div class="main-container" id="dashboard-view" style="display: none;">
+
+    <!-- ──────────────── TAB 1: Documents ──────────────── -->
+    <section id="section-documents">
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search-box">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" class="search-input" id="search-input" placeholder="Search confidential documents by name or category...">
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="category-pills">
+          <button class="cat-pill active" data-cat="all">All Documents</button>
+          <button class="cat-pill" data-cat="salary">💰 Salary & Equity</button>
+          <button class="cat-pill" data-cat="contracts">📄 Contracts</button>
+          <button class="cat-pill" data-cat="drawings">📐 Drawings & IP</button>
+          <button class="cat-pill" data-cat="audit">📋 Audit & Regulatory</button>
+          <button class="cat-pill" data-cat="general">📁 General</button>
+        </div>
+
+        <!-- Action Button -->
+        <div>
+          <button class="btn btn-primary" id="btn-open-upload">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Encrypt & Upload Asset
+          </button>
+        </div>
+      </div>
+
+      <!-- Document Grid -->
+      <div class="doc-grid" id="document-grid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ──────────────── TAB 2: Audit Trail & Proof ──────────────── -->
+    <section id="section-audit" style="display: none;">
+      <!-- Cryptographic Verification Banner -->
+      <div class="integrity-banner" id="integrity-banner">
+        <div class="integrity-left">
+          <div class="integrity-icon" id="integrity-icon">🛡️</div>
+          <div>
+            <h3 id="integrity-title" style="margin-bottom: 0.25rem;">Cryptographic Hash Chain Verified</h3>
+            <p id="integrity-desc" style="font-size: 0.88rem; color: var(--text-muted);">
+              All historical entries are cryptographically linked using SHA-256 Merkle chaining. Any altered, inserted, or deleted record is immediately detected.
+            </p>
+          </div>
+        </div>
+        <button class="btn btn-success" id="btn-verify-audit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          Re-Verify Chain Integrity
+        </button>
+      </div>
+
+      <!-- Security Stats Summary Cards -->
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-label">Total Audit Events</div>
+          <div class="stat-value text-primary" id="stat-total-actions">—</div>
+          <div class="stat-subtitle">Append-only immutable records</div>
+        </div>
+
+        <div class="stat-card red">
+          <div class="stat-label">Access Refusals (Proof)</div>
+          <div class="stat-value text-danger" id="stat-total-refusals">—</div>
+          <div class="stat-subtitle">Attempted unauthorized accesses stopped</div>
+        </div>
+
+        <div class="stat-card emerald">
+          <div class="stat-label">Active Document Grants</div>
+          <div class="stat-value text-success" id="stat-total-grants">—</div>
+          <div class="stat-subtitle">Granular per-document grants</div>
+        </div>
+
+        <div class="stat-card amber">
+          <div class="stat-label">Revocations Enforced</div>
+          <div class="stat-value text-warning" id="stat-total-revocations">—</div>
+          <div class="stat-subtitle">Immediate token cancellations</div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.1rem;">Chronological Security Log</h3>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <label style="font-size: 0.8rem; color: var(--text-dim);">Filter Action:</label>
+          <select id="audit-action-filter" class="form-input" style="padding: 0.4rem 0.8rem; width: 200px;">
+            <option value="">All Actions</option>
+            <option value="VIEW_DENIED">VIEW_DENIED (Refusal)</option>
+            <option value="DOWNLOAD_DENIED">DOWNLOAD_DENIED (Refusal)</option>
+            <option value="LOGIN_FAILED">LOGIN_FAILED (Refusal)</option>
+            <option value="PERMISSION_GRANT">PERMISSION_GRANT</option>
+            <option value="PERMISSION_REVOKE">PERMISSION_REVOKE</option>
+            <option value="UPLOAD">UPLOAD</option>
+            <option value="DOWNLOAD">DOWNLOAD</option>
+            <option value="AI_SUGGESTION_GENERATED">AI_SUGGESTION_GENERATED</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Audit Table -->
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Timestamp (UTC)</th>
+              <th>Action</th>
+              <th>Actor</th>
+              <th>Target Asset</th>
+              <th>Cryptographic Evidence Details</th>
+            </tr>
+          </thead>
+          <tbody id="audit-table-body">
+            <!-- Dynamic audit logs -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ──────────────── TAB 3: User Clearance (Admin Only) ──────────────── -->
+    <section id="section-admin" style="display: none;">
+      <div style="margin-bottom: 1.5rem;">
+        <h2>User Clearance & Identity Directory</h2>
+        <p class="text-muted" style="font-size: 0.9rem;">Deactivating an account immediately increments their cryptographic token counter, terminating all active JWTs and refresh tokens instantaneously.</p>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>User Name & Email</th>
+              <th>Role</th>
+              <th>Clearance Status</th>
+              <th>Joined Date</th>
+              <th>Immediate Actions</th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body">
+            <!-- Dynamic users -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- ════════ MODALS ════════ -->
+
+  <!-- Modal 1: Upload Document -->
+  <div class="modal-overlay" id="upload-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Encrypt & Upload Secure Asset</h3>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+      <form id="upload-form">
+        <div class="form-group">
+          <label class="form-label" for="upload-file">Select File (Max 50MB)</label>
+          <input type="file" id="upload-file" class="form-input" required>
+          <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.35rem;">
+            Allowed: PDF, PNG, JPG, Word, Excel, CSV, ZIP, TXT. File will be encrypted at rest with AES-256-GCM.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="upload-category">Sensitivity Category</label>
+          <select id="upload-category" class="form-input">
+            <option value="salary">💰 Salary & Executive Compensation (Strictly Restricted)</option>
+            <option value="contracts">📄 Contracts & Legal Agreements</option>
+            <option value="drawings">📐 Proprietary Drawings & IP</option>
+            <option value="audit">📋 Regulatory & Statutory Audit</option>
+            <option value="general" selected>📁 General Business Asset</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="upload-desc">Description & Security Scope</label>
+          <textarea id="upload-desc" class="form-input" rows="3" placeholder="Provide confidential context for this asset..."></textarea>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+          <button type="button" class="btn btn-secondary modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="upload-submit-btn">Encrypt & Upload to Vault</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Access Management -->
+  <div class="modal-overlay" id="permissions-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h3>Access Clearance Grants</h3>
+          <p style="font-size: 0.8rem; color: var(--text-dim);" id="perm-modal-filename">Document</p>
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+
+      <!-- Current Grants List -->
+      <div style="margin-bottom: 1.5rem;">
+        <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 0.75rem;">Active Grants</h4>
+        <div id="permissions-list-container" style="max-height: 200px; overflow-y: auto; background: var(--bg-primary); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+          <!-- Permissions list -->
+        </div>
+      </div>
+
+      <!-- Grant Access Form -->
+      <form id="grant-permission-form" style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+        <h4 style="font-size: 0.88rem; margin-bottom: 0.75rem;">Grant New Named Permission</h4>
+
+        <div class="form-group">
+          <label class="form-label" for="grant-email">Recipient Identity (Email)</label>
+          <input type="email" id="grant-email" class="form-input" placeholder="colleague@trustvault.internal" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label" for="grant-level">Permission Level</label>
+            <select id="grant-level" class="form-input">
+              <option value="read" selected>Read Only (Download & View)</option>
+              <option value="edit">Edit Clearance (Replace file & metadata)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="grant-expiry">Auto-Expiry (Optional)</label>
+            <input type="datetime-local" id="grant-expiry" class="form-input">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+          <button type="submit" class="btn btn-success" id="grant-submit-btn">
+            Grant Access & Log to Chain
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: AI Access Advisor -->
+  <div class="modal-overlay" id="ai-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="ai-box-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 6v6l4 2"/></svg>
+          AI Access Advisor
+        </div>
+        <button class="modal-close-btn">&times;</button>
+      </div>
+
+      <div style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1rem;">
+        Asset: <strong id="ai-modal-filename" style="color: var(--text-main);">filename</strong>
+      </div>
+
+      <div id="ai-recommendations-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

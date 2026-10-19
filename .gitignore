@@ -1,0 +1,27 @@
+﻿# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.class
+
+# Virtual environments
+venv/
+*/venv/
+.venv/
+env/
+
+# Testing & caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local database & temp
+backend/trustvault.db
+*.db-journal
+*.db-wal
+
+# Secrets & environment
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
