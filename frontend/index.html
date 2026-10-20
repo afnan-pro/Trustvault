@@ -58,93 +58,267 @@
     </div>
   </header>
 
-  <!-- ════════ VIEW 1: Authentication / Login ════════ -->
+  <!-- ════════ VIEW 1: Authentication / Sign In & Sign Up ════════ -->
   <main class="auth-wrapper" id="auth-view">
     <div class="auth-card">
       <div class="auth-header">
         <div class="brand-icon">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             <path d="M9 12l2 2 4-4"/>
           </svg>
         </div>
         <h2>TrustVault</h2>
-        <p>Zero-Trust Cryptographic Document Sharing</p>
+        <div class="auth-header-tag">Zero-Trust Cryptographic Document Cloud</div>
+        <p id="auth-header-desc">Zero-trust access with tamper-evident cryptographic proof</p>
+      </div>
+
+      <!-- Segmented Tab Switcher -->
+      <div class="auth-nav-tabs">
+        <button type="button" class="auth-tab-btn active" id="tab-btn-signin" data-auth-mode="signin">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Sign In
+        </button>
+        <button type="button" class="auth-tab-btn" id="tab-btn-signup" data-auth-mode="signup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          Create Identity (Sign Up)
+        </button>
       </div>
 
       <!-- Alert Box -->
       <div id="login-alert" class="toast danger" style="display: none; margin-bottom: 1.25rem;"></div>
 
-      <form id="login-form">
-        <div class="form-group">
-          <label class="form-label" for="login-email">Cryptographic Identity (Email)</label>
-          <input type="email" id="login-email" class="form-input" placeholder="name@company.com" required autocomplete="email">
+      <!-- ════════ PANEL A: Sign In ════════ -->
+      <div id="auth-panel-signin">
+        <!-- Shield Status Indicator -->
+        <div class="auth-shield-indicator">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div class="auth-shield-dot"></div>
+            <span>Shield Active: Sliding Window 5 attempts/min</span>
+          </div>
+          <span class="mono" style="font-size: 0.65rem; color: var(--cyan);">ENFORCED</span>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="login-password">Master Clearance Key (Password)</label>
-          <div class="input-container">
-            <input type="password" id="login-password" class="form-input" placeholder="Enter high-entropy password" required autocomplete="current-password">
-            <button type="button" class="input-icon-btn" id="toggle-password-btn" title="Toggle password visibility">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <form id="login-form">
+          <div class="form-group">
+            <label class="form-label" for="login-email">
+              <span>Cryptographic Identity (Email)</span>
+              <span class="form-label-hint">Enterprise format</span>
+            </label>
+            <input type="email" id="login-email" class="form-input" placeholder="operator@trustvault.internal" required autocomplete="email">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-password">
+              <span>Master Clearance Key (Password)</span>
+              <span class="form-label-hint">Argon2id Hash</span>
+            </label>
+            <div class="input-container">
+              <input type="password" id="login-password" class="form-input" placeholder="Enter high-entropy clearance key" required autocomplete="current-password">
+              <button type="button" class="input-icon-btn" id="toggle-password-btn" title="Toggle password visibility">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+
+            <!-- Live Password Strength Meter -->
+            <div class="password-meter">
+              <div class="meter-bar">
+                <div class="meter-fill" id="meter-fill"></div>
+              </div>
+              <div class="password-rules">
+                <div class="rule-item" id="rule-len"><span class="rule-icon">○</span> 10+ characters</div>
+                <div class="rule-item" id="rule-upper"><span class="rule-icon">○</span> 1 uppercase</div>
+                <div class="rule-item" id="rule-num"><span class="rule-icon">○</span> 1 digit</div>
+                <div class="rule-item" id="rule-special"><span class="rule-icon">○</span> 1 symbol (!@#$)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="auth-links-row">
+            <label class="form-checkbox-row" style="margin-bottom: 0;">
+              <input type="checkbox" id="login-remember">
+              <span>Remember identity on terminal</span>
+            </label>
+            <a href="javascript:void(0)" class="auth-link" id="link-open-recovery">Emergency Recovery?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="login-submit-btn" style="width: 100%; margin-top: 0.5rem; padding: 0.8rem;">
+            <span>Authenticate & Enter Vault</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </form>
+
+        <!-- One-Click Demo Personas for Judges -->
+        <div class="persona-selector">
+          <div class="persona-title">
+            <span>Evaluator Quick-Fill Personas</span>
+            <span style="color: var(--cyan); font-size: 0.7rem;">Click to Switch</span>
+          </div>
+          <div class="persona-grid">
+            <button type="button" class="persona-card" onclick="selectPersona('admin@trustvault.internal', 'AdminPass123!@#')">
+              <div class="persona-role text-primary">🛡️ Administrator</div>
+              <div class="persona-name">Eleanor Vance (CSO)</div>
+              <div style="font-size: 0.68rem; color: var(--text-dim);">Full audit & system view</div>
+            </button>
+
+            <button type="button" class="persona-card" onclick="selectPersona('alice@trustvault.internal', 'OwnerPass123!@#')">
+              <div class="persona-role text-success">📁 Document Owner</div>
+              <div class="persona-name">Alice Wright</div>
+              <div style="font-size: 0.68rem; color: var(--text-dim);">Uploads & grants access</div>
+            </button>
+
+            <button type="button" class="persona-card" onclick="selectPersona('bob@trustvault.internal', 'ViewerPass123!@#')">
+              <div class="persona-role text-warning">👁️ Internal Viewer</div>
+              <div class="persona-name">Bob Jenkins</div>
+              <div style="font-size: 0.68rem; color: var(--text-dim);">Restricted reader</div>
+            </button>
+
+            <button type="button" class="persona-card" onclick="selectPersona('charlie@client.corp', 'PartnerPass123!@#')">
+              <div class="persona-role" style="color: #c084fc;">⚖️ External Counsel</div>
+              <div class="persona-name">Charlie Zhang</div>
+              <div style="font-size: 0.68rem; color: var(--text-dim);">Contract editor</div>
             </button>
           </div>
-
-          <!-- Live Password Strength Meter -->
-          <div class="password-meter">
-            <div class="meter-bar">
-              <div class="meter-fill" id="meter-fill"></div>
-            </div>
-            <div class="password-rules">
-              <div class="rule-item" id="rule-len"><span class="rule-icon">○</span> 10+ characters</div>
-              <div class="rule-item" id="rule-upper"><span class="rule-icon">○</span> 1 uppercase</div>
-              <div class="rule-item" id="rule-num"><span class="rule-icon">○</span> 1 digit</div>
-              <div class="rule-item" id="rule-special"><span class="rule-icon">○</span> 1 symbol (!@#$)</div>
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary" id="login-submit-btn" style="width: 100%; margin-top: 1rem; padding: 0.8rem;">
-          <span>Authenticate & Enter Vault</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </button>
-      </form>
-
-      <!-- One-Click Demo Personas for Judges -->
-      <div class="persona-selector">
-        <div class="persona-title">
-          <span>Evaluator Quick-Fill Personas</span>
-          <span style="color: var(--cyan); font-size: 0.7rem;">Click to Switch</span>
-        </div>
-        <div class="persona-grid">
-          <button type="button" class="persona-card" onclick="selectPersona('admin@trustvault.internal', 'AdminPass123!@#')">
-            <div class="persona-role text-primary">🛡️ Administrator</div>
-            <div class="persona-name">Eleanor Vance (CSO)</div>
-            <div style="font-size: 0.68rem; color: var(--text-dim);">Full audit & system view</div>
-          </button>
-
-          <button type="button" class="persona-card" onclick="selectPersona('alice@trustvault.internal', 'OwnerPass123!@#')">
-            <div class="persona-role text-success">📁 Document Owner</div>
-            <div class="persona-name">Alice Wright</div>
-            <div style="font-size: 0.68rem; color: var(--text-dim);">Uploads & grants access</div>
-          </button>
-
-          <button type="button" class="persona-card" onclick="selectPersona('bob@trustvault.internal', 'ViewerPass123!@#')">
-            <div class="persona-role text-warning">👁️ Internal Viewer</div>
-            <div class="persona-name">Bob Jenkins</div>
-            <div style="font-size: 0.68rem; color: var(--text-dim);">Restricted reader</div>
-          </button>
-
-          <button type="button" class="persona-card" onclick="selectPersona('charlie@client.corp', 'PartnerPass123!@#')">
-            <div class="persona-role" style="color: #c084fc;">⚖️ External Counsel</div>
-            <div class="persona-name">Charlie Zhang</div>
-            <div style="font-size: 0.68rem; color: var(--text-dim);">Contract editor</div>
-          </button>
         </div>
       </div>
 
-      <div style="margin-top: 1.5rem; text-align: center; font-size: 0.75rem; color: var(--text-dim);">
-        Protected by Argon2id memory-hard hashing, sliding-window rate limiting, and tamper-evident audit chaining.
+      <!-- ════════ PANEL B: Sign Up / Identity Provisioning ════════ -->
+      <div id="auth-panel-signup" style="display: none;">
+        <!-- Shield Status Indicator -->
+        <div class="auth-shield-indicator">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div class="auth-shield-dot"></div>
+            <span>New Operator Provisioning • Cryptographic Enrollment</span>
+          </div>
+          <span class="mono" style="font-size: 0.65rem; color: var(--success);">ONLINE</span>
+        </div>
+
+        <form id="signup-form">
+          <div class="form-group">
+            <label class="form-label" for="signup-name">
+              <span>Full Name / Operator Designation</span>
+              <span class="form-label-hint">Official title</span>
+            </label>
+            <input type="text" id="signup-name" class="form-input" placeholder="e.g. Marcus Vance" required autocomplete="name">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="signup-email">
+              <span>Enterprise Email Identity</span>
+              <span class="form-label-hint" id="signup-email-hint">Corporate domain</span>
+            </label>
+            <input type="email" id="signup-email" class="form-input" placeholder="marcus@trustvault.internal" required autocomplete="email">
+          </div>
+
+          <!-- Clearance Level Selection -->
+          <div class="form-group">
+            <label class="form-label">
+              <span>Requested Vault Clearance</span>
+              <span class="form-label-hint">Role scope</span>
+            </label>
+            <div class="role-grid">
+              <label class="role-card-label">
+                <input type="radio" name="signup-role" value="viewer" checked>
+                <div class="role-card-box">
+                  <div class="role-card-title text-warning">
+                    <span>👁️</span>
+                    <span>Internal Viewer</span>
+                  </div>
+                  <div class="role-card-desc">Read and inspect documents explicitly authorized to you.</div>
+                </div>
+              </label>
+
+              <label class="role-card-label">
+                <input type="radio" name="signup-role" value="owner">
+                <div class="role-card-box">
+                  <div class="role-card-title text-success">
+                    <span>📁</span>
+                    <span>Document Owner</span>
+                  </div>
+                  <div class="role-card-desc">Upload AES-256 files, issue grants, and revoke immediately.</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Key Entropy Generator Row -->
+          <div class="form-group">
+            <div class="key-generator-row">
+              <label class="form-label" for="signup-password" style="margin-bottom: 0;">
+                <span>Master Clearance Key (Password)</span>
+              </label>
+              <button type="button" class="btn-ghost-sm" id="btn-generate-password" title="Generate strong random cryptographic key">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                Generate Entropy Key
+              </button>
+            </div>
+            <div class="input-container" style="margin-top: 0.4rem;">
+              <input type="password" id="signup-password" class="form-input" placeholder="Minimum 10 chars with upper, lower, num, symbol" required autocomplete="new-password">
+              <button type="button" class="input-icon-btn" id="toggle-signup-password-btn" title="Toggle password visibility">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+
+            <!-- Sign Up Live Password Strength Meter -->
+            <div class="password-meter">
+              <div class="meter-header">
+                <span>Entropy Rating</span>
+                <span class="meter-strength-label text-muted" id="signup-meter-label">None</span>
+              </div>
+              <div class="meter-bar">
+                <div class="meter-fill" id="signup-meter-fill"></div>
+              </div>
+              <div class="password-rules">
+                <div class="rule-item" id="signup-rule-len"><span class="rule-icon">○</span> 10+ characters</div>
+                <div class="rule-item" id="signup-rule-upper"><span class="rule-icon">○</span> 1 uppercase</div>
+                <div class="rule-item" id="signup-rule-lower"><span class="rule-icon">○</span> 1 lowercase</div>
+                <div class="rule-item" id="signup-rule-num"><span class="rule-icon">○</span> 1 number</div>
+                <div class="rule-item" id="signup-rule-special" style="grid-column: span 2;"><span class="rule-icon">○</span> 1 special symbol (!@#$%^&*)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label class="form-label" for="signup-password-confirm">
+              <span>Confirm Clearance Key</span>
+              <span class="form-label-hint">Match check</span>
+            </label>
+            <div class="input-container">
+              <input type="password" id="signup-password-confirm" class="form-input" placeholder="Re-enter master clearance key" required autocomplete="new-password">
+              <button type="button" class="input-icon-btn" id="toggle-signup-confirm-btn" title="Toggle password visibility">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+            <div class="password-match-badge" id="signup-match-status">
+              <span class="rule-icon">○</span>
+              <span>Re-enter key to verify exact match</span>
+            </div>
+          </div>
+
+          <!-- Enterprise Agreement Checkbox -->
+          <label class="form-checkbox-row">
+            <input type="checkbox" id="signup-agreement" required>
+            <span>I agree to the Zero-Trust Security Protocol, hardware-grade AES-256 disk encryption, and append-only cryptographic audit logging.</span>
+          </label>
+
+          <button type="submit" class="btn btn-success" id="signup-submit-btn" style="width: 100%; margin-top: 0.5rem; padding: 0.8rem;">
+            <span>Provision Identity & Enter Vault</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          </button>
+        </form>
+
+        <div style="margin-top: 1.25rem; text-align: center; font-size: 0.8rem; color: var(--text-dim);">
+          Already provisioned? <a href="javascript:void(0)" class="auth-link" id="link-switch-to-signin">Sign in to your vault</a>
+        </div>
+      </div>
+
+      <!-- Security Guarantees Footer Badges -->
+      <div class="auth-security-badges">
+        <span class="auth-sec-badge">🛡️ AES-256-GCM</span>
+        <span class="auth-sec-badge">🔒 Argon2id KDF</span>
+        <span class="auth-sec-badge">🔗 SHA-256 Chain</span>
+        <span class="auth-sec-badge">⚡ Sub-ms Revocation</span>
       </div>
     </div>
   </main>
@@ -404,13 +578,69 @@
         <button class="modal-close-btn">&times;</button>
       </div>
 
-      <div style="font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1rem;">
-        Asset: <strong id="ai-modal-filename" style="color: var(--text-main);">filename</strong>
-      </div>
-
       <div id="ai-recommendations-container">
         <!-- Rendered dynamically -->
       </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Emergency Clearance Recovery -->
+  <div class="modal-overlay" id="recovery-modal">
+    <div class="modal-content" style="max-width: 480px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center; color: var(--warning);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem;">Emergency Key Recovery</h3>
+            <p style="font-size: 0.75rem; color: var(--text-dim);">Invalidates existing tokens across all devices</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="close-recovery-modal-btn">&times;</button>
+      </div>
+
+      <div id="recovery-alert" class="toast danger" style="display: none; margin-bottom: 1rem;"></div>
+
+      <form id="recovery-form">
+        <div class="form-group">
+          <label class="form-label" for="recovery-email">
+            <span>Identity (Registered Email)</span>
+          </label>
+          <input type="email" id="recovery-email" class="form-input" placeholder="operator@trustvault.internal" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="recovery-password">
+            <span>New Master Clearance Key</span>
+            <span class="form-label-hint">Argon2id Hash</span>
+          </label>
+          <div class="input-container">
+            <input type="password" id="recovery-password" class="form-input" placeholder="Enter new high-entropy password" required>
+            <button type="button" class="input-icon-btn" id="toggle-recovery-password-btn" title="Toggle password visibility">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="recovery-password-confirm">
+            <span>Confirm New Clearance Key</span>
+          </label>
+          <input type="password" id="recovery-password-confirm" class="form-input" placeholder="Re-enter new clearance key" required>
+        </div>
+
+        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-sm); padding: 0.75rem; font-size: 0.75rem; color: #fbbf24; margin-bottom: 1.25rem; line-height: 1.4;">
+          ⚠️ <strong>Defense-in-Depth Protocol:</strong> Setting a new clearance key immediately bumps your user <code>token_generation</code>, revoking all active sessions and refresh tokens on all devices instantly.
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-recovery">Cancel</button>
+          <button type="submit" class="btn btn-warning" id="recovery-submit-btn">
+            <span>Reset Clearance Key</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 

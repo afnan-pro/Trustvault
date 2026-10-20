@@ -97,6 +97,24 @@ const API = {
     return data;
   },
 
+  async signup(email, fullName, password, role = 'viewer') {
+    const data = await this.request('/api/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify({ email, full_name: fullName, password, role }),
+    });
+
+    this.setToken(data.access_token);
+    this.setUser(data.user);
+    return data;
+  },
+
+  async resetPassword(email, newPassword) {
+    return await this.request('/api/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ email, new_password: newPassword }),
+    });
+  },
+
   async refreshToken() {
     try {
       const res = await fetch('/api/auth/refresh', {

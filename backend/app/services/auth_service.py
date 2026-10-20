@@ -193,6 +193,31 @@ class AuthService:
         )
 
     @staticmethod
+    async def reset_password(
+        db: AsyncSession,
+        email: str,
+        new_password: str,
+    ) -> User:
+        """Reset password for a user identity and invalidate all existing sessions."""
+        user = await AuthService.get_user_by_email(db, email)
+        if not user:
+            raise ValueError("Identity not found in directory")
+
+        is_strong, msg = check_password_strength(new_password)
+        if not is_strong:
+            raise ValueError(msg)
+
+        user.password_hash = hash_password(new_password)
+        user.token_generation += 1
+
+        await db.execute(
+            update(RefreshToken)
+            .where(RefreshToken.user_id == user.id)
+            .values(is_revoked=True)
+        )
+        return user
+
+    @staticmethod
     async def revoke_all_tokens(db: AsyncSession, user_id: UUID):
         """
         Revoke all tokens for a user — used when permissions are revoked

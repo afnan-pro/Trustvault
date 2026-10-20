@@ -55,6 +55,15 @@ function renderAuthView() {
   document.getElementById('nav-bar').style.display = 'none';
   document.getElementById('auth-view').style.display = 'flex';
   document.getElementById('dashboard-view').style.display = 'none';
+
+  // Check for remembered terminal email
+  const remembered = localStorage.getItem('trustvault_remembered_email');
+  const emailInput = document.getElementById('login-email');
+  const rememberCheckbox = document.getElementById('login-remember');
+  if (remembered && emailInput) {
+    emailInput.value = remembered;
+    if (rememberCheckbox) rememberCheckbox.checked = true;
+  }
 }
 
 function renderApp() {
@@ -94,11 +103,64 @@ function updateRoleVisibility() {
 
 // ════════ Event Listeners Setup ════════
 function initEventListeners() {
+  // Auth Tab Switcher (Sign In vs Sign Up)
+  const tabSignin = document.getElementById('tab-btn-signin');
+  const tabSignup = document.getElementById('tab-btn-signup');
+  const switchSigninLink = document.getElementById('link-switch-to-signin');
+
+  if (tabSignin) tabSignin.addEventListener('click', () => switchAuthMode('signin'));
+  if (tabSignup) tabSignup.addEventListener('click', () => switchAuthMode('signup'));
+  if (switchSigninLink) switchSigninLink.addEventListener('click', () => switchAuthMode('signin'));
+
   // Login Form
   const loginForm = document.getElementById('login-form');
   if (loginForm) {
     loginForm.addEventListener('submit', handleLogin);
   }
+
+  // Sign Up Form
+  const signupForm = document.getElementById('signup-form');
+  if (signupForm) {
+    signupForm.addEventListener('submit', handleSignup);
+  }
+
+  // Entropy Key Generator
+  const genBtn = document.getElementById('btn-generate-password');
+  if (genBtn) {
+    genBtn.addEventListener('click', generateEntropyPassword);
+  }
+
+  // Emergency Recovery Modal Triggers
+  const openRecoveryLink = document.getElementById('link-open-recovery');
+  const recoveryModal = document.getElementById('recovery-modal');
+  const closeRecoveryBtn = document.getElementById('close-recovery-modal-btn');
+  const cancelRecoveryBtn = document.getElementById('btn-cancel-recovery');
+  const recoveryForm = document.getElementById('recovery-form');
+
+  if (openRecoveryLink && recoveryModal) {
+    openRecoveryLink.addEventListener('click', () => {
+      document.getElementById('recovery-alert').style.display = 'none';
+      recoveryModal.classList.add('open');
+      const curEmail = document.getElementById('login-email')?.value || '';
+      if (curEmail) document.getElementById('recovery-email').value = curEmail;
+    });
+  }
+
+  if (closeRecoveryBtn && recoveryModal) {
+    closeRecoveryBtn.addEventListener('click', () => recoveryModal.classList.remove('open'));
+  }
+  if (cancelRecoveryBtn && recoveryModal) {
+    cancelRecoveryBtn.addEventListener('click', () => recoveryModal.classList.remove('open'));
+  }
+  if (recoveryForm) {
+    recoveryForm.addEventListener('submit', handleRecovery);
+  }
+
+  // Password Visibility Toggles
+  setupPasswordToggle('toggle-password-btn', 'login-password');
+  setupPasswordToggle('toggle-signup-password-btn', 'signup-password');
+  setupPasswordToggle('toggle-signup-confirm-btn', 'signup-password-confirm');
+  setupPasswordToggle('toggle-recovery-password-btn', 'recovery-password');
 
   // Logout
   const logoutBtn = document.getElementById('btn-logout');
@@ -183,54 +245,110 @@ function initEventListeners() {
   }
 }
 
-// ════════ Password Strength Meter ════════
+// ════════ Password Strength & Match Meters ════════
+function evaluatePassword(val) {
+  const checks = {
+    len: val.length >= 10,
+    upper: /[A-Z]/.test(val),
+    lower: /[a-z]/.test(val),
+    num: /[0-9]/.test(val),
+    special: /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(val),
+  };
+  const score = Object.values(checks).filter(Boolean).length;
+  return { checks, score };
+}
+
 function initPasswordStrengthMeter() {
+  // 1. Sign In Password Meter
   const pwdInput = document.getElementById('login-password');
   const fill = document.getElementById('meter-fill');
-  if (!pwdInput || !fill) return;
+  if (pwdInput && fill) {
+    pwdInput.addEventListener('input', () => {
+      const val = pwdInput.value;
+      const { checks, score } = evaluatePassword(val);
 
-  pwdInput.addEventListener('input', () => {
-    const val = pwdInput.value;
-    const checks = {
-      len: val.length >= 10,
-      upper: /[A-Z]/.test(val),
-      lower: /[a-z]/.test(val),
-      num: /[0-9]/.test(val),
-      special: /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(val),
-    };
+      updateRule('rule-len', checks.len);
+      updateRule('rule-upper', checks.upper);
+      updateRule('rule-num', checks.num);
+      updateRule('rule-special', checks.special);
 
-    // Update rule indicators
-    updateRule('rule-len', checks.len);
-    updateRule('rule-upper', checks.upper);
-    updateRule('rule-num', checks.num);
-    updateRule('rule-special', checks.special);
-
-    const score = Object.values(checks).filter(Boolean).length;
-    fill.className = 'meter-fill';
-
-    if (val.length === 0) {
-      fill.style.width = '0%';
-    } else if (score <= 2) {
-      fill.classList.add('meter-weak');
-    } else if (score === 3) {
-      fill.classList.add('meter-fair');
-    } else if (score === 4) {
-      fill.classList.add('meter-good');
-    } else {
-      fill.classList.add('meter-strong');
-    }
-  });
-
-  // Toggle Password Visibility
-  const toggleBtn = document.getElementById('toggle-password-btn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
-      pwdInput.setAttribute('type', type);
-      toggleBtn.innerHTML = type === 'password' 
-        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
-        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+      fill.className = 'meter-fill';
+      if (val.length === 0) {
+        fill.style.width = '0%';
+      } else if (score <= 2) {
+        fill.classList.add('meter-weak');
+      } else if (score === 3) {
+        fill.classList.add('meter-fair');
+      } else if (score === 4) {
+        fill.classList.add('meter-good');
+      } else {
+        fill.classList.add('meter-strong');
+      }
     });
+  }
+
+  // 2. Sign Up Password Meter & Match Checker
+  const signupPwd = document.getElementById('signup-password');
+  const signupConfirm = document.getElementById('signup-password-confirm');
+  const signupFill = document.getElementById('signup-meter-fill');
+  const signupLabel = document.getElementById('signup-meter-label');
+
+  if (signupPwd && signupFill) {
+    signupPwd.addEventListener('input', () => {
+      const val = signupPwd.value;
+      const { checks, score } = evaluatePassword(val);
+
+      updateRule('signup-rule-len', checks.len);
+      updateRule('signup-rule-upper', checks.upper);
+      updateRule('signup-rule-lower', checks.lower);
+      updateRule('signup-rule-num', checks.num);
+      updateRule('signup-rule-special', checks.special);
+
+      signupFill.className = 'meter-fill';
+      if (val.length === 0) {
+        signupFill.style.width = '0%';
+        if (signupLabel) { signupLabel.textContent = 'None'; signupLabel.className = 'meter-strength-label text-muted'; }
+      } else if (score <= 2) {
+        signupFill.classList.add('meter-weak');
+        if (signupLabel) { signupLabel.textContent = 'Weak'; signupLabel.className = 'meter-strength-label text-danger'; }
+      } else if (score === 3) {
+        signupFill.classList.add('meter-fair');
+        if (signupLabel) { signupLabel.textContent = 'Fair'; signupLabel.className = 'meter-strength-label text-warning'; }
+      } else if (score === 4) {
+        signupFill.classList.add('meter-good');
+        if (signupLabel) { signupLabel.textContent = 'Good'; signupLabel.className = 'meter-strength-label text-primary'; }
+      } else {
+        signupFill.classList.add('meter-strong');
+        if (signupLabel) { signupLabel.textContent = 'Cryptographic Grade'; signupLabel.className = 'meter-strength-label text-success'; }
+      }
+
+      updateSignupMatchStatus();
+    });
+  }
+
+  if (signupConfirm) {
+    signupConfirm.addEventListener('input', updateSignupMatchStatus);
+  }
+}
+
+function updateSignupMatchStatus() {
+  const pwd = document.getElementById('signup-password')?.value || '';
+  const confirm = document.getElementById('signup-password-confirm')?.value || '';
+  const statusEl = document.getElementById('signup-match-status');
+  if (!statusEl) return;
+
+  if (!confirm) {
+    statusEl.className = 'password-match-badge';
+    statusEl.innerHTML = '<span class="rule-icon">○</span> <span>Re-enter key to verify exact match</span>';
+    return;
+  }
+
+  if (pwd === confirm) {
+    statusEl.className = 'password-match-badge matched';
+    statusEl.innerHTML = '<span class="rule-icon">✓</span> <span>Clearance keys match perfectly</span>';
+  } else {
+    statusEl.className = 'password-match-badge mismatched';
+    statusEl.innerHTML = '<span class="rule-icon">✕</span> <span>Clearance keys do not match</span>';
   }
 }
 
@@ -239,16 +357,87 @@ function updateRule(elementId, isValid) {
   if (el) {
     if (isValid) {
       el.classList.add('valid');
-      el.querySelector('.rule-icon').textContent = '✓';
+      const icon = el.querySelector('.rule-icon');
+      if (icon) icon.textContent = '✓';
     } else {
       el.classList.remove('valid');
-      el.querySelector('.rule-icon').textContent = '○';
+      const icon = el.querySelector('.rule-icon');
+      if (icon) icon.textContent = '○';
     }
+  }
+}
+
+// ════════ Password Visibility Toggle Helper ════════
+function setupPasswordToggle(toggleBtnId, inputId) {
+  const btn = document.getElementById(toggleBtnId);
+  const input = document.getElementById(inputId);
+  if (!btn || !input) return;
+
+  btn.addEventListener('click', () => {
+    const isPwd = input.getAttribute('type') === 'password';
+    input.setAttribute('type', isPwd ? 'text' : 'password');
+    btn.innerHTML = isPwd
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  });
+}
+
+// ════════ Auth Switcher Tabs ════════
+function switchAuthMode(mode) {
+  const isSignIn = mode === 'signin';
+  const tabSignin = document.getElementById('tab-btn-signin');
+  const tabSignup = document.getElementById('tab-btn-signup');
+  const panelSignin = document.getElementById('auth-panel-signin');
+  const panelSignup = document.getElementById('auth-panel-signup');
+  const alertEl = document.getElementById('login-alert');
+  const descEl = document.getElementById('auth-header-desc');
+
+  if (tabSignin) tabSignin.classList.toggle('active', isSignIn);
+  if (tabSignup) tabSignup.classList.toggle('active', !isSignIn);
+  if (panelSignin) panelSignin.style.display = isSignIn ? 'block' : 'none';
+  if (panelSignup) panelSignup.style.display = !isSignIn ? 'block' : 'none';
+  if (alertEl) alertEl.style.display = 'none';
+
+  if (descEl) {
+    descEl.textContent = isSignIn
+      ? 'Zero-trust access with tamper-evident cryptographic proof'
+      : 'Provision a new zero-trust identity with hardware-grade cryptographic credentials';
+  }
+}
+
+// ════════ Entropy Password Generator ════════
+function generateEntropyPassword() {
+  const uppers = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const lowers = 'abcdefghjkmnpqrstuvwxyz';
+  const digits = '23456789';
+  const symbols = '!@#$%^&*-_=+';
+
+  let pwd = '';
+  // Guaranteed requirements
+  for (let i = 0; i < 3; i++) pwd += uppers[Math.floor(Math.random() * uppers.length)];
+  for (let i = 0; i < 5; i++) pwd += lowers[Math.floor(Math.random() * lowers.length)];
+  for (let i = 0; i < 3; i++) pwd += digits[Math.floor(Math.random() * digits.length)];
+  for (let i = 0; i < 3; i++) pwd += symbols[Math.floor(Math.random() * symbols.length)];
+
+  // Shuffle thoroughly
+  pwd = pwd.split('').sort(() => 0.5 - Math.random()).join('');
+
+  const signupPwd = document.getElementById('signup-password');
+  const signupConfirm = document.getElementById('signup-password-confirm');
+  if (signupPwd && signupConfirm) {
+    signupPwd.value = pwd;
+    signupConfirm.value = pwd;
+    signupPwd.dispatchEvent(new Event('input'));
+    signupConfirm.dispatchEvent(new Event('input'));
+
+    navigator.clipboard?.writeText(pwd).catch(() => {});
+    showToast('High-entropy key generated & copied to clipboard!', 'success');
   }
 }
 
 // ════════ One-Click Evaluator Persona Switcher ════════
 window.selectPersona = function(email, password) {
+  switchAuthMode('signin');
   document.getElementById('login-email').value = email;
   const pwdInput = document.getElementById('login-password');
   pwdInput.value = password;
@@ -259,13 +448,14 @@ window.selectPersona = function(email, password) {
   loginForm.dispatchEvent(new Event('submit'));
 };
 
-// ════════ Authentication Logic ════════
+// ════════ Authentication Handlers ════════
 async function handleLogin(e) {
   e.preventDefault();
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   const btn = document.getElementById('login-submit-btn');
   const alertEl = document.getElementById('login-alert');
+  const rememberCheckbox = document.getElementById('login-remember');
 
   alertEl.style.display = 'none';
   btn.disabled = true;
@@ -274,6 +464,14 @@ async function handleLogin(e) {
   try {
     const data = await API.login(email, password);
     state.currentUser = data.user;
+
+    // Remember identity preference
+    if (rememberCheckbox?.checked) {
+      localStorage.setItem('trustvault_remembered_email', email);
+    } else {
+      localStorage.removeItem('trustvault_remembered_email');
+    }
+
     showToast(`Welcome, ${data.user.full_name}`, 'success');
     renderApp();
   } catch (err) {
@@ -283,6 +481,100 @@ async function handleLogin(e) {
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<span>Authenticate & Enter Vault</span> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  }
+}
+
+async function handleSignup(e) {
+  e.preventDefault();
+  const fullName = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirm = document.getElementById('signup-password-confirm').value;
+  const role = document.querySelector('input[name="signup-role"]:checked')?.value || 'viewer';
+  const agreed = document.getElementById('signup-agreement').checked;
+  const btn = document.getElementById('signup-submit-btn');
+  const alertEl = document.getElementById('login-alert');
+
+  if (password !== confirm) {
+    alertEl.textContent = 'Clearance keys do not match. Please verify.';
+    alertEl.style.display = 'block';
+    showToast('Clearance keys do not match', 'warning');
+    return;
+  }
+
+  const { score } = evaluatePassword(password);
+  if (score < 5) {
+    alertEl.textContent = 'Password must satisfy all 5 complexity rules (10+ characters, uppercase, lowercase, digit, and special symbol).';
+    alertEl.style.display = 'block';
+    showToast('Key does not meet enterprise security requirements', 'danger');
+    return;
+  }
+
+  if (!agreed) {
+    showToast('Please confirm agreement to the Zero-Trust Protocol', 'warning');
+    return;
+  }
+
+  alertEl.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<span>Provisioning Identity...</span>';
+
+  try {
+    const data = await API.signup(email, fullName, password, role);
+    state.currentUser = data.user;
+    showToast(`Identity Provisioned. Welcome, ${data.user.full_name}!`, 'success');
+    renderApp();
+  } catch (err) {
+    alertEl.textContent = err.message;
+    alertEl.style.display = 'block';
+    showToast(err.message, 'danger');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Provision Identity & Enter Vault</span> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>';
+  }
+}
+
+async function handleRecovery(e) {
+  e.preventDefault();
+  const email = document.getElementById('recovery-email').value.trim();
+  const newPassword = document.getElementById('recovery-password').value;
+  const confirm = document.getElementById('recovery-password-confirm').value;
+  const alertEl = document.getElementById('recovery-alert');
+  const btn = document.getElementById('recovery-submit-btn');
+
+  if (newPassword !== confirm) {
+    alertEl.textContent = 'New clearance keys do not match.';
+    alertEl.style.display = 'block';
+    return;
+  }
+
+  const { score } = evaluatePassword(newPassword);
+  if (score < 5) {
+    alertEl.textContent = 'New key must satisfy all complexity rules (10+ characters, upper, lower, digit, and special symbol).';
+    alertEl.style.display = 'block';
+    return;
+  }
+
+  alertEl.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<span>Resetting Clearance...</span>';
+
+  try {
+    await API.resetPassword(email, newPassword);
+    showToast('Master clearance key reset. Active sessions invalidated. Please sign in.', 'success');
+    document.getElementById('recovery-modal').classList.remove('open');
+    switchAuthMode('signin');
+    const loginEmail = document.getElementById('login-email');
+    if (loginEmail) {
+      loginEmail.value = email;
+      document.getElementById('login-password')?.focus();
+    }
+  } catch (err) {
+    alertEl.textContent = err.message;
+    alertEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Reset Clearance Key</span>';
   }
 }
 

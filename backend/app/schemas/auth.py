@@ -15,9 +15,26 @@ class UserCreate(BaseModel):
     role: str = Field(default="viewer", pattern="^(admin|owner|viewer)$")
 
 
+class UserSignup(BaseModel):
+    email: EmailStr
+    full_name: str = Field(..., min_length=2, max_length=255)
+    password: str = Field(..., min_length=10, max_length=128)
+    role: str = Field(default="viewer", pattern="^(viewer|owner)$")
+
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=1, max_length=128)
+
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+
+class PasswordResetConfirm(BaseModel):
+    email: EmailStr
+    new_password: str = Field(..., min_length=10, max_length=128)
+
 
 
 class UserResponse(BaseModel):

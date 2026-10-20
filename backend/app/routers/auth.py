@@ -12,7 +12,8 @@ from app.database import get_db
 from app.middleware.auth import get_current_user, require_role
 from app.models.user import User
 from app.schemas.auth import (
-    UserCreate, UserLogin, UserResponse, TokenResponse, PasswordChange, UserUpdate,
+    UserCreate, UserSignup, UserLogin, UserResponse, TokenResponse, PasswordChange, UserUpdate,
+    PasswordResetConfirm,
 )
 from app.services.auth_service import AuthService
 from app.services.audit_service import AuditService
@@ -74,6 +75,84 @@ async def login(
         expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         user=UserResponse.model_validate(user),
     )
+
+
+@router.post("/signup", response_model=TokenResponse)
+async def signup(
+    data: UserSignup,
+    request: Request,
+    response: Response,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Self-service registration for new users.
+    Creates account and immediately issues access tokens.
+    """
+    try:
+        user = await AuthService.register_user(
+            db, data.email, data.full_name, data.password, data.role,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    # Audit log
+    await AuditService.log(
+        db, action="USER_SIGNUP",
+        user_id=user.id,
+        details={"email": user.email, "role": user.role},
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
+        success=True,
+    )
+
+    access_token, refresh_token = await AuthService.create_tokens(db, user)
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+        max_age=REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60,
+        path="/api/auth",
+    )
+
+    return TokenResponse(
+        access_token=access_token,
+        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        user=UserResponse.model_validate(user),
+    )
+
+
+@router.post("/reset-password")
+async def reset_password(
+    data: PasswordResetConfirm,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Reset password for an existing account identity.
+    Invalidates all existing tokens and sessions.
+    """
+    try:
+        user = await AuthService.reset_password(
+            db, data.email, data.new_password,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+    # Audit log
+    await AuditService.log(
+        db, action="PASSWORD_RESET_RECOVERY",
+        user_id=user.id,
+        details={"email": user.email},
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
+        success=True,
+    )
+
+    return {"message": "Master clearance key successfully reset. Please log in with your new key."}
+
 
 
 @router.post("/register", response_model=UserResponse)

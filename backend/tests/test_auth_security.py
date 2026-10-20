@@ -77,3 +77,82 @@ async def test_password_change_invalidates_all_active_tokens(client: AsyncClient
     )
     assert me_resp.status_code == 401
     assert "revoked" in me_resp.json()["detail"].lower()
+
+
+@pytest.mark.asyncio
+async def test_user_signup_success_and_immediate_token(client: AsyncClient, seeded_db):
+    """
+    Verify public signup provisions an account, creates an audit record,
+    and returns valid JWT access tokens immediately.
+    """
+    signup_payload = {
+        "email": "newuser@example.com",
+        "full_name": "New Vault Operator",
+        "password": "SecurePass123!@#",
+        "role": "viewer",
+    }
+    resp = await client.post("/api/auth/signup", json=signup_payload)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "access_token" in data
+    assert data["user"]["email"] == "newuser@example.com"
+    assert data["user"]["role"] == "viewer"
+
+    # Verify that the new access token allows fetching current user info
+    me_resp = await client.get(
+        "/api/auth/me",
+        headers={"Authorization": f"Bearer {data['access_token']}"}
+    )
+    assert me_resp.status_code == 200
+    assert me_resp.json()["email"] == "newuser@example.com"
+
+
+@pytest.mark.asyncio
+async def test_user_signup_rejects_weak_password_and_duplicate_email(client: AsyncClient, seeded_db):
+    """Verify signup enforces password strength policy and prevents duplicate email registration."""
+    # Weak password
+    weak_resp = await client.post("/api/auth/signup", json={
+        "email": "another@example.com",
+        "full_name": "Another Operator",
+        "password": "weak",
+        "role": "viewer",
+    })
+    assert weak_resp.status_code in (400, 422)
+
+    # Duplicate email (Bob already exists in seeded_db)
+    dup_resp = await client.post("/api/auth/signup", json={
+        "email": "bob@trustvault.internal",
+        "full_name": "Impostor Bob",
+        "password": "SecurePass123!@#",
+        "role": "viewer",
+    })
+    assert dup_resp.status_code == 400
+    assert "already registered" in dup_resp.json()["detail"].lower()
+
+
+@pytest.mark.asyncio
+async def test_password_reset_recovery(client: AsyncClient, seeded_db):
+    """Verify emergency password reset updates hash, invalidates old sessions, and allows login."""
+    # Reset Charlie's password
+    reset_resp = await client.post("/api/auth/reset-password", json={
+        "email": "charlie@client.corp",
+        "new_password": "NewResetSecret123!@#",
+    })
+    assert reset_resp.status_code == 200
+
+    # Old password fails
+    old_login = await client.post("/api/auth/login", json={
+        "email": "charlie@client.corp",
+        "password": "PartnerPass123!@#",
+    })
+    assert old_login.status_code == 401
+
+    # New password succeeds
+    new_login = await client.post("/api/auth/login", json={
+        "email": "charlie@client.corp",
+        "password": "NewResetSecret123!@#",
+    })
+    assert new_login.status_code == 200
+    assert "access_token" in new_login.json()
+
+

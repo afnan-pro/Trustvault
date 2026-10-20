@@ -60,8 +60,8 @@ async def security_headers_and_rate_limit_middleware(request: Request, call_next
     client_ip = request.client.host if request.client else "unknown"
     path = request.url.path
 
-    # Rate limiting on /api/auth/login: max 5 requests per 60 seconds per IP
-    if path == "/api/auth/login" and request.method == "POST":
+    # Rate limiting on auth endpoints: max 5 requests per 60 seconds per IP
+    if path in ("/api/auth/login", "/api/auth/signup", "/api/auth/reset-password") and request.method == "POST":
         now = time.time()
         timestamps = _rate_limits.setdefault(client_ip, [])
         # Prune older than 60s
