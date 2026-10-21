@@ -3,6 +3,9 @@ Main Application Entrypoint — TrustVault
 Secure document sharing platform with cryptographic tamper-evident audit trails.
 """
 import time
+import os, sys
+# Ensure the "app" package inside the backend directory is importable
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -46,6 +49,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS if CORS_ORIGINS != ["*"] else ["*"],
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -85,12 +89,12 @@ async def security_headers_and_rate_limit_middleware(request: Request, call_next
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     response.headers["Content-Security-Policy"] = (
-        "default-src 'self'; "
+        "default-src 'self' blob:; "
         "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; "
         "font-src 'self' https://fonts.gstatic.com data:; "
         "img-src 'self' data: blob:; "
-        "connect-src 'self'"
+        "connect-src 'self' http://localhost:* http://127.0.0.1:* ws: wss: blob:"
     )
 
     return response

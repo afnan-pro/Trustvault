@@ -1,4 +1,4 @@
-﻿# Byte-compiled / optimized / DLL files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *.class
@@ -25,3 +25,8 @@ backend/trustvault.db
 # OS files
 .DS_Store
 Thumbs.db
+
+# Uploaded encrypted files
+uploads/*
+!uploads/.gitkeep
+

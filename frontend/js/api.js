@@ -4,7 +4,24 @@
  */
 
 const API = {
-  baseUrl: '',
+  // Auto-detect backend API host:
+  // - If accessed from FastAPI (port 8000), use same-origin relative URLs
+  // - If accessed from Live Server (port 5500), Vite (5173), or file://, target http://127.0.0.1:8000
+  baseUrl: (function() {
+    if (window.location.protocol.startsWith('http') && window.location.port === '8000') {
+      return '';
+    }
+    const host = window.location.hostname || '127.0.0.1';
+    return `http://${host === 'localhost' ? 'localhost' : '127.0.0.1'}:8000`;
+  })(),
+
+  getUrl(endpoint) {
+    if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+      return endpoint;
+    }
+    const clean = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    return `${this.baseUrl}${clean}`;
+  },
 
   getToken() {
     return localStorage.getItem('trustvault_token');
@@ -44,10 +61,12 @@ const API = {
     }
 
     options.headers = headers;
-    options.credentials = 'same-origin'; // for cookies
+    options.credentials = 'include'; // Supports sessions across localhost ports and same-origin
+
+    const url = this.getUrl(endpoint);
 
     try {
-      const response = await fetch(endpoint, options);
+      const response = await fetch(url, options);
 
       // Handle 401 Unauthorized / Token Revocation
       if (response.status === 401) {
@@ -56,7 +75,7 @@ const API = {
           const refreshed = await this.refreshToken();
           if (refreshed) {
             headers['Authorization'] = `Bearer ${this.getToken()}`;
-            return fetch(endpoint, options);
+            return fetch(url, options);
           }
         }
         this.clearSession();
@@ -82,6 +101,10 @@ const API = {
 
       return response;
     } catch (err) {
+      if (err.name === 'TypeError' && err.message.toLowerCase().includes('fetch')) {
+        const target = this.baseUrl || `${window.location.protocol}//${window.location.host}`;
+        throw new Error(`Cannot connect to TrustVault server at ${target}. Please make sure the backend is running on port 8000.`);
+      }
       throw err;
     }
   },
@@ -117,7 +140,7 @@ const API = {
 
   async refreshToken() {
     try {
-      const res = await fetch('/api/auth/refresh', {
+      const res = await fetch(this.getUrl('/api/auth/refresh'), {
         method: 'POST',
         credentials: 'include',
       });
@@ -168,10 +191,11 @@ const API = {
 
   async downloadDocument(documentId, filename) {
     const token = this.getToken();
-    const response = await fetch(`/api/documents/${documentId}/download`, {
+    const response = await fetch(this.getUrl(`/api/documents/${documentId}/download`), {
       headers: {
         'Authorization': `Bearer ${token}`
-      }
+      },
+      credentials: 'include',
     });
 
     if (!response.ok) {

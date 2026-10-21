@@ -7,7 +7,8 @@ import math
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Form, status
-from fastapi.responses import Response as FileResponse
+from fastapi.responses import StreamingResponse
+import io, json
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
@@ -160,6 +161,40 @@ async def list_documents(
         total_pages=math.ceil(total / page_size) if total > 0 else 0,
     )
 
+@router.get("/export", response_class=StreamingResponse, tags=["Documents"])
+async def export_documents(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> StreamingResponse:
+    """Export all accessible documents as a JSON file."""
+    # Get IDs the user can access
+    accessible_ids = await PermissionService.get_accessible_document_ids(db, current_user)
+    # Retrieve all documents (large page size to capture all)
+    docs, _ = await DocumentService.search_documents(
+        db=db,
+        accessible_ids=accessible_ids,
+        query=None,
+        category=None,
+        owner_id=None,
+        page=1,
+        page_size=10000,
+    )
+    docs_data = [_build_doc_response(doc).dict() for doc in docs]
+    json_bytes = json.dumps(docs_data, default=str).encode("utf-8")
+    await AuditService.log(
+        db,
+        action="EXPORT",
+        user_id=current_user.id,
+        ip_address=request.client.host if request.client else None,
+        user_agent=request.headers.get("user-agent"),
+    )
+    return StreamingResponse(
+        io.BytesIO(json_bytes),
+        media_type="application/json",
+        headers={"Content-Disposition": 'attachment; filename="documents_export.json"'},
+    )
+
 
 @router.get("/{document_id}", response_model=DocumentResponse)
 async def get_document(
@@ -255,8 +290,8 @@ async def download_document(
         user_agent=request.headers.get("user-agent"),
     )
 
-    return FileResponse(
-        content=file_data,
+    return StreamingResponse(
+        io.BytesIO(file_data),
         media_type=document.mime_type,
         headers={
             "Content-Disposition": f'attachment; filename="{document.original_filename}"',
