@@ -60,7 +60,7 @@ python -m venv venv
 
 # Activate virtual environment
 # Windows:
-.\venv\Scripts\activate
+.\.venv\Scripts\activate
 # Linux/macOS:
 source venv/bin/activate
 
@@ -72,8 +72,7 @@ pip install -r requirements.txt aiosqlite
 ```powershell
 python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
-Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser. The single-page dashboard and API are served directly.
-Interactive OpenAPI documentation is available at **[http://127.0.0.1:8000/api/docs](http://127.0.0.1:8000/api/docs)**.
+Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in your browser. The single-page dashboard and API are served directly. Interactive OpenAPI documentation is available at **[http://127.0.0.1:8000/api/docs](http://127.0.0.1:8000/api/docs)**.
 
 ### 3. Run Automated Tests
 ```powershell
