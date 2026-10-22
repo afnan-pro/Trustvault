@@ -459,7 +459,7 @@ async function handleLogin(e) {
 
   alertEl.style.display = 'none';
   btn.disabled = true;
-  btn.innerHTML = '<span>Verifying clearance...</span>';
+  btn.innerHTML = '<span>Signing in...</span>';
 
   try {
     const data = await API.login(email, password);
@@ -472,7 +472,7 @@ async function handleLogin(e) {
       localStorage.removeItem('trustvault_remembered_email');
     }
 
-    showToast(`Welcome, ${data.user.full_name}`, 'success');
+    showToast(`Welcome back, ${data.user.full_name}`, 'success');
     renderApp();
   } catch (err) {
     alertEl.textContent = err.message;
@@ -480,7 +480,7 @@ async function handleLogin(e) {
     showToast(err.message, 'danger');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<span>Authenticate & Enter Vault</span> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    btn.innerHTML = '<span>Sign In</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
   }
 }
 
@@ -496,33 +496,33 @@ async function handleSignup(e) {
   const alertEl = document.getElementById('login-alert');
 
   if (password !== confirm) {
-    alertEl.textContent = 'Clearance keys do not match. Please verify.';
+    alertEl.textContent = 'Passwords do not match. Please verify.';
     alertEl.style.display = 'block';
-    showToast('Clearance keys do not match', 'warning');
+    showToast('Passwords do not match', 'warning');
     return;
   }
 
   const { score } = evaluatePassword(password);
   if (score < 5) {
-    alertEl.textContent = 'Password must satisfy all 5 complexity rules (10+ characters, uppercase, lowercase, digit, and special symbol).';
+    alertEl.textContent = 'Password must satisfy all complexity rules (10+ characters, uppercase, lowercase, digit, and special symbol).';
     alertEl.style.display = 'block';
-    showToast('Key does not meet enterprise security requirements', 'danger');
+    showToast('Password does not meet security requirements', 'danger');
     return;
   }
 
   if (!agreed) {
-    showToast('Please confirm agreement to the Zero-Trust Protocol', 'warning');
+    showToast('Please confirm agreement to the security policy', 'warning');
     return;
   }
 
   alertEl.style.display = 'none';
   btn.disabled = true;
-  btn.innerHTML = '<span>Provisioning Identity...</span>';
+  btn.innerHTML = '<span>Creating account...</span>';
 
   try {
     const data = await API.signup(email, fullName, password, role);
     state.currentUser = data.user;
-    showToast(`Identity Provisioned. Welcome, ${data.user.full_name}!`, 'success');
+    showToast(`Account created. Welcome, ${data.user.full_name}!`, 'success');
     renderApp();
   } catch (err) {
     alertEl.textContent = err.message;
@@ -530,7 +530,7 @@ async function handleSignup(e) {
     showToast(err.message, 'danger');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<span>Provision Identity & Enter Vault</span> <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>';
+    btn.innerHTML = '<span>Create Account</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>';
   }
 }
 
@@ -543,25 +543,25 @@ async function handleRecovery(e) {
   const btn = document.getElementById('recovery-submit-btn');
 
   if (newPassword !== confirm) {
-    alertEl.textContent = 'New clearance keys do not match.';
+    alertEl.textContent = 'Passwords do not match.';
     alertEl.style.display = 'block';
     return;
   }
 
   const { score } = evaluatePassword(newPassword);
   if (score < 5) {
-    alertEl.textContent = 'New key must satisfy all complexity rules (10+ characters, upper, lower, digit, and special symbol).';
+    alertEl.textContent = 'New password must satisfy all complexity rules (10+ characters, upper, lower, digit, and special symbol).';
     alertEl.style.display = 'block';
     return;
   }
 
   alertEl.style.display = 'none';
   btn.disabled = true;
-  btn.innerHTML = '<span>Resetting Clearance...</span>';
+  btn.innerHTML = '<span>Resetting password...</span>';
 
   try {
     await API.resetPassword(email, newPassword);
-    showToast('Master clearance key reset. Active sessions invalidated. Please sign in.', 'success');
+    showToast('Password reset successfully. Active sessions revoked. Please sign in.', 'success');
     document.getElementById('recovery-modal').classList.remove('open');
     switchAuthMode('signin');
     const loginEmail = document.getElementById('login-email');
@@ -574,7 +574,7 @@ async function handleRecovery(e) {
     alertEl.style.display = 'block';
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<span>Reset Clearance Key</span>';
+    btn.innerHTML = '<span>Reset Password</span>';
   }
 }
 
@@ -618,10 +618,10 @@ function renderDocumentGrid(documents) {
   const grid = document.getElementById('document-grid');
   if (!documents || documents.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
-        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🔒</div>
-        <h3>No Accessible Documents Found</h3>
-        <p style="font-size: 0.9rem; margin-top: 0.5rem;">Default Deny: You only have access to documents explicitly shared with your cryptographic identity.</p>
+      <div style="grid-column: 1/-1; text-align: center; padding: 3.5rem 1rem; color: var(--text-muted); background: var(--bg-surface); border: 1px dashed var(--border-medium); border-radius: var(--radius-md);">
+        <div style="font-size: 2rem; margin-bottom: 0.75rem;">📁</div>
+        <h3 style="font-size: 1.1rem; color: var(--text-main);">No Accessible Documents</h3>
+        <p style="font-size: 0.85rem; margin-top: 0.35rem; color: var(--text-muted);">You only have access to documents explicitly shared with your account.</p>
       </div>`;
     return;
   }
@@ -642,9 +642,9 @@ function renderDocumentGrid(documents) {
     });
 
     let permBadge = '';
-    if (isOwner) permBadge = '<span class="badge badge-owner">Document Owner</span>';
-    else if (doc.permission_level === 'edit') permBadge = '<span class="badge badge-edit">Edit Clearance</span>';
-    else if (doc.permission_level === 'read') permBadge = '<span class="badge badge-read">Read Clearance</span>';
+    if (isOwner) permBadge = '<span class="badge badge-owner">Owner</span>';
+    else if (doc.permission_level === 'edit') permBadge = '<span class="badge badge-edit">Editor</span>';
+    else if (doc.permission_level === 'read') permBadge = '<span class="badge badge-read">Viewer</span>';
     else permBadge = '<span class="badge badge-denied">Restricted</span>';
 
     return `
@@ -652,19 +652,18 @@ function renderDocumentGrid(documents) {
         <div>
           <div class="doc-top">
             <div class="${iconClass}">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
                 <line x1="16" y1="13" x2="8" y2="13"/>
                 <line x1="16" y1="17" x2="8" y2="17"/>
-                <polyline points="10 9 9 9 8 9"/>
               </svg>
             </div>
             <div class="doc-header-info">
               <h3 class="doc-title" title="${escapeHtml(doc.original_filename)}">${escapeHtml(doc.original_filename)}</h3>
               <div class="doc-badges">
                 ${permBadge}
-                <span class="badge" style="background: rgba(255,255,255,0.06); color: var(--text-dim);">${escapeHtml(doc.category || 'general')}</span>
+                <span class="badge" style="background: var(--bg-surface-subtle); color: var(--text-muted); border: 1px solid var(--border-subtle);">${escapeHtml(doc.category || 'general')}</span>
               </div>
             </div>
           </div>
@@ -686,15 +685,15 @@ function renderDocumentGrid(documents) {
 
             ${isOwner || state.currentUser?.role === 'admin' ? `
               <button class="btn btn-secondary btn-sm" title="Manage Permissions" onclick="openPermissionsModal('${doc.id}', '${escapeHtml(doc.original_filename)}')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Access
               </button>
-              <button class="btn btn-secondary btn-sm" style="color: #c084fc; border-color: rgba(192, 132, 252, 0.3);" title="AI Permission Advisor" onclick="openAIAdvisor('${doc.id}', '${escapeHtml(doc.original_filename)}', '${escapeHtml(doc.category)}')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 6v6l4 2"/></svg>
-                AI
+              <button class="btn btn-secondary btn-sm" title="AI Access Advisor" onclick="openAIAdvisor('${doc.id}', '${escapeHtml(doc.original_filename)}', '${escapeHtml(doc.category)}')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 6v6l4 2"/></svg>
+                Advisor
               </button>
               <button class="btn btn-danger btn-sm" title="Delete Document" onclick="deleteDoc('${doc.id}', '${escapeHtml(doc.original_filename)}')">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>` : ''}
           </div>
         </div>
@@ -802,21 +801,21 @@ function renderPermissionsList(perms) {
     if (isRevoked) {
       statusBadge = '<span class="badge badge-denied">Revoked</span>';
     } else if (isExpired) {
-      statusBadge = '<span class="badge" style="background: rgba(245,158,11,0.2); color: var(--warning);">Expired</span>';
+      statusBadge = '<span class="badge" style="background: var(--warning-bg); color: var(--warning-text); border: 1px solid var(--warning-border);">Expired</span>';
     }
 
     return `
-      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); ${isRevoked ? 'opacity: 0.5;' : ''}">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); ${isRevoked ? 'opacity: 0.5;' : ''}">
         <div>
-          <div style="font-size: 0.88rem; font-weight: 600;">${escapeHtml(p.user_name || p.user_email)}</div>
-          <div style="font-size: 0.75rem; color: var(--text-dim);">
-            ${escapeHtml(p.user_email)} • Level: <strong style="text-transform: uppercase; color: var(--cyan);">${p.level}</strong> • ${statusBadge}
+          <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">${escapeHtml(p.user_name || p.user_email)}</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">
+            ${escapeHtml(p.user_email)} • Level: <strong style="text-transform: uppercase; color: var(--text-main);">${p.level}</strong> • ${statusBadge}
           </div>
         </div>
         ${!isRevoked ? `
           <button class="btn btn-danger btn-sm" onclick="revokeAccess('${p.id}')">
-            Revoke Immediately
-          </button>` : '<span style="font-size: 0.72rem; color: var(--danger);">Terminated</span>'}
+            Revoke Access
+          </button>` : '<span style="font-size: 0.75rem; color: var(--danger); font-weight: 500;">Revoked</span>'}
       </div>
     `;
   }).join('');
@@ -847,13 +846,13 @@ async function handleGrantPermission(e) {
 
 window.revokeAccess = async function(permId) {
   const docId = state.selectedDocForPermissions;
-  if (!confirm('Immediately revoke this permission? The target user will be locked out instantly and their tokens revoked.')) {
+  if (!confirm('Revoke this permission? The user will immediately lose access to this document.')) {
     return;
   }
 
   try {
-    await API.revokePermission(docId, permId, 'Owner revoked grant via TrustVault Access Management');
-    showToast('Permission revoked immediately! Active sessions invalidated.', 'warning');
+    await API.revokePermission(docId, permId, 'Owner revoked grant via Access Management');
+    showToast('Permission revoked successfully', 'warning');
     loadDocPermissions(docId);
   } catch (err) {
     showToast(err.message, 'danger');
@@ -863,14 +862,13 @@ window.revokeAccess = async function(permId) {
 // ════════ AI Access Advisor Modal ════════
 window.openAIAdvisor = async function(docId, filename, category) {
   state.selectedDocForPermissions = docId;
-  document.getElementById('ai-modal-filename').textContent = filename;
+  const modalFilename = document.getElementById('perm-modal-filename');
   openModal('ai-modal');
 
   const container = document.getElementById('ai-recommendations-container');
   container.innerHTML = `
-    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
-      <div style="font-size: 1.8rem; margin-bottom: 0.5rem; animation: pulse 1.5s infinite;">🤖</div>
-      <p>Analyzing document classification, sensitive keywords & corporate directory...</p>
+    <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
+      <p style="font-size: 0.875rem;">Analyzing document category and recommended permissions...</p>
     </div>`;
 
   try {
@@ -887,37 +885,37 @@ function renderAIAdvisorResults(data) {
   const recommendationsHtml = data.recommendations.map(r => `
     <div class="ai-recommendation-item">
       <div>
-        <div style="font-weight: 600; font-size: 0.88rem;">${escapeHtml(r.user_name)} (${escapeHtml(r.user_email)})</div>
-        <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.2rem;">${escapeHtml(r.justification)}</div>
-        <div style="font-size: 0.72rem; color: var(--cyan); margin-top: 0.2rem;">
-          Recommended: <strong>${r.recommended_level.toUpperCase()}</strong> • Confidence: ${Math.round(r.confidence * 100)}%
+        <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-main);">${escapeHtml(r.user_name)} (${escapeHtml(r.user_email)})</div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">${escapeHtml(r.justification)}</div>
+        <div style="font-size: 0.72rem; color: var(--primary-accent); margin-top: 0.2rem; font-weight: 500;">
+          Recommended: <strong>${r.recommended_level.toUpperCase()}</strong> (${Math.round(r.confidence * 100)}% confidence)
         </div>
       </div>
       <button class="btn btn-primary btn-sm" onclick="confirmAIGrant('${r.user_email}', '${r.recommended_level}')">
-        Confirm & Grant
+        Grant
       </button>
     </div>
   `).join('');
 
   container.innerHTML = `
     <div style="margin-bottom: 1.25rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-        <span style="font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Classification</span>
-        <span class="badge" style="background: rgba(139, 92, 246, 0.2); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.4);">${escapeHtml(data.data_classification)}</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+        <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.03em;">Classification</span>
+        <span class="badge" style="background: var(--purple-bg); color: var(--purple-text); border: 1px solid var(--purple-border);">${escapeHtml(data.data_classification)}</span>
       </div>
-      <p style="font-size: 0.82rem; color: var(--text-muted); background: rgba(0,0,0,0.25); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+      <p style="font-size: 0.825rem; color: var(--text-body); background: var(--bg-surface-subtle); padding: 0.75rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
         ${escapeHtml(data.sensitivity_summary)}
       </p>
     </div>
 
-    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">
-      AI Suggested Collaborators (${data.recommendations.length})
+    <div style="font-size: 0.825rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.4rem;">
+      Suggested Collaborators (${data.recommendations.length})
     </div>
 
-    ${recommendationsHtml || '<p class="text-muted" style="font-size: 0.85rem;">No automatic collaborators suggested. Highly sensitive document.</p>'}
+    ${recommendationsHtml || '<p class="text-muted" style="font-size: 0.825rem;">No automatic collaborators suggested.</p>'}
 
-    <div style="margin-top: 1.25rem; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: var(--radius-sm); font-size: 0.75rem; color: var(--warning);">
-      🛡️ <strong>Rule:</strong> ${escapeHtml(data.machine_enforced_rule)}
+    <div style="margin-top: 1rem; padding: 0.65rem 0.85rem; background: var(--warning-bg); border: 1px solid var(--warning-border); border-radius: var(--radius-sm); font-size: 0.75rem; color: var(--warning-text);">
+      <strong>Policy:</strong> ${escapeHtml(data.machine_enforced_rule)}
     </div>
   `;
 }
@@ -926,7 +924,7 @@ window.confirmAIGrant = async function(email, level) {
   const docId = state.selectedDocForPermissions;
   try {
     await API.grantPermission(docId, email, level);
-    showToast(`AI Suggestion Confirmed: Granted ${level} to ${email}`, 'success');
+    showToast(`Access granted to ${email} as ${level}`, 'success');
     closeAllModals();
     loadDocuments();
   } catch (err) {
@@ -973,7 +971,7 @@ function renderAuditTable(logs) {
   }
 
   tbody.innerHTML = logs.map(log => {
-    let actionBadge = `<span class="badge" style="background: rgba(255,255,255,0.06);">${escapeHtml(log.action)}</span>`;
+    let actionBadge = `<span class="badge" style="background: var(--bg-surface-subtle); color: var(--text-muted); border: 1px solid var(--border-subtle);">${escapeHtml(log.action)}</span>`;
     if (log.action.includes('DENIED') || log.action.includes('FAILED')) {
       actionBadge = `<span class="badge badge-denied">${escapeHtml(log.action)}</span>`;
     } else if (log.action === 'PERMISSION_GRANT') {
@@ -994,7 +992,7 @@ function renderAuditTable(logs) {
 
     return `
       <tr>
-        <td class="mono" style="color: var(--cyan); font-weight: 600;">#${log.id}</td>
+        <td class="mono" style="color: var(--text-main); font-weight: 500;">#${log.id}</td>
         <td>${timeFormatted}</td>
         <td>${actionBadge}</td>
         <td><strong>${escapeHtml(log.user_email || 'System')}</strong></td>
@@ -1015,7 +1013,7 @@ async function handleVerifyAuditChain() {
   const icon = document.getElementById('integrity-icon');
 
   btn.disabled = true;
-  btn.textContent = 'Verifying Mathematical Chain...';
+  btn.textContent = 'Verifying Chain Integrity...';
 
   try {
     const res = await API.verifyAuditIntegrity();
@@ -1023,21 +1021,21 @@ async function handleVerifyAuditChain() {
     if (res.is_valid) {
       banner.className = 'integrity-banner';
       icon.textContent = '🛡️';
-      title.textContent = 'Cryptographic Hash Chain Verified & Intact';
-      desc.textContent = `All ${res.total_entries} historical records mathematically chained via SHA-256. Zero alterations, deletions, or insertions detected.`;
-      showToast('Audit trail cryptographic integrity verified 100%!', 'success');
+      title.textContent = 'Cryptographic Hash Chain Verified';
+      desc.textContent = `All ${res.total_entries} historical records cryptographically chained via SHA-256. Zero alterations, deletions, or insertions detected.`;
+      showToast('Audit trail cryptographic integrity verified', 'success');
     } else {
       banner.className = 'integrity-banner tampered';
       icon.textContent = '⚠️';
-      title.textContent = 'CRITICAL ALERT: Audit Tampering Detected!';
+      title.textContent = 'Audit Tampering Detected';
       desc.textContent = `${res.message} (Flagged Block #${res.first_broken_entry_id}). The record has been modified or altered.`;
-      showToast('Integrity check failed: Tampering detected!', 'danger');
+      showToast('Integrity check: Tampering detected', 'danger');
     }
   } catch (err) {
     showToast(err.message, 'danger');
   } finally {
     btn.disabled = false;
-    btn.textContent = 'Re-Verify Cryptographic Integrity';
+    btn.textContent = 'Verify Chain Integrity';
   }
 }
 
@@ -1071,16 +1069,16 @@ function renderUsersTable(users) {
     return `
       <tr>
         <td>
-          <div style="font-weight: 600;">${escapeHtml(u.full_name)}</div>
-          <div style="font-size: 0.75rem; color: var(--text-dim);">${escapeHtml(u.email)}</div>
+          <div style="font-weight: 600; color: var(--text-main);">${escapeHtml(u.full_name)}</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">${escapeHtml(u.email)}</div>
         </td>
-        <td><strong style="text-transform: uppercase; color: var(--cyan);">${u.role}</strong></td>
+        <td><strong style="text-transform: uppercase; color: var(--text-main); font-size: 0.78rem;">${u.role}</strong></td>
         <td>${statusBadge}</td>
         <td>${new Date(u.created_at).toLocaleDateString()}</td>
         <td>
           ${!isSelf ? `
             <button class="btn ${u.is_active ? 'btn-danger' : 'btn-success'} btn-sm" onclick="toggleUserStatus('${u.id}', ${!u.is_active})">
-              ${u.is_active ? 'Deactivate (Kill Sessions)' : 'Activate'}
+              ${u.is_active ? 'Deactivate' : 'Activate'}
             </button>` : '<span class="text-dim" style="font-size: 0.75rem;">Current Account</span>'}
         </td>
       </tr>
@@ -1090,7 +1088,7 @@ function renderUsersTable(users) {
 
 window.toggleUserStatus = async function(userId, newStatus) {
   const actionName = newStatus ? 'activate' : 'deactivate';
-  if (!confirm(`Are you sure you want to ${actionName} this user? Deactivating immediately kills all their active sessions and revokes token authority.`)) {
+  if (!confirm(`Are you sure you want to ${actionName} this user? Deactivating will immediately invalidate all active sessions.`)) {
     return;
   }
 
