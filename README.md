@@ -12,16 +12,18 @@ The database automatically seeds with 4 test accounts representing all roles:
 
 | Role | Name & Title | Email | Password | Permissions & Scope |
 | :--- | :--- | :--- | :--- | :--- |
-| **Administrator** | Eleanor Vance (CSO) | `admin@trustvault.internal` | `AdminPass123!@#` | Full audit trail inspection, user management, session killing |
-| **Document Owner** | Alice Wright (Head of Ops) | `alice@trustvault.internal` | `OwnerPass123!@#` | Uploads files, grants access, revokes access, manages permissions |
-| **Internal Viewer** | Bob Jenkins (Analyst) | `bob@trustvault.internal` | `ViewerPass123!@#` | Read-only access to granted contracts; strictly forbidden from unshared salary review |
-| **External Counsel** | Charlie Zhang (Legal) | `charlie@client.corp` | `PartnerPass123!@#` | Edit clearance on contracts; restricted elsewhere |
+| **Administrator** | *Removed* | `admin@trustvault.internal` | `AdminPass123!@#` | Full audit trail inspection, user management, session killing |
+| **Document Owner** | *Removed* | `alice@trustvault.internal` | `OwnerPass123!@#` | Uploads files, grants access, revokes access, manages permissions |
+| **Internal Viewer** | *Removed* | `bob@trustvault.internal` | `ViewerPass123!@#` | Read-only access to granted contracts; strictly forbidden from unshared salary review |
+| **External Counsel** | *Removed* | `charlie@client.corp` | `PartnerPass123!@#` | Edit clearance on contracts; restricted elsewhere |
 
 *(Note: The login screen includes a **One-Click Evaluator Persona Switcher** allowing judges to switch between these accounts instantly with 1 click).*
 
 ---
 
 ## Core Security Guarantees
+
+- **Forensic Watermarking – Leak Prevention**: Identifies the source of screen-capture leaks, embedding invisible watermarks to trace document exposure.
 
 1. **Default Deny Authorization (The Server Decides, Every Time):**
    - Access is evaluated under:

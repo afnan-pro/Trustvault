@@ -260,32 +260,7 @@ function evaluatePassword(val) {
 
 function initPasswordStrengthMeter() {
   // 1. Sign In Password Meter
-  const pwdInput = document.getElementById('login-password');
-  const fill = document.getElementById('meter-fill');
-  if (pwdInput && fill) {
-    pwdInput.addEventListener('input', () => {
-      const val = pwdInput.value;
-      const { checks, score } = evaluatePassword(val);
-
-      updateRule('rule-len', checks.len);
-      updateRule('rule-upper', checks.upper);
-      updateRule('rule-num', checks.num);
-      updateRule('rule-special', checks.special);
-
-      fill.className = 'meter-fill';
-      if (val.length === 0) {
-        fill.style.width = '0%';
-      } else if (score <= 2) {
-        fill.classList.add('meter-weak');
-      } else if (score === 3) {
-        fill.classList.add('meter-fair');
-      } else if (score === 4) {
-        fill.classList.add('meter-good');
-      } else {
-        fill.classList.add('meter-strong');
-      }
-    });
-  }
+  // Login password strength meter removed – only shown on sign‑up
 
   // 2. Sign Up Password Meter & Match Checker
   const signupPwd = document.getElementById('signup-password');
@@ -458,6 +433,15 @@ async function handleLogin(e) {
   const rememberCheckbox = document.getElementById('login-remember');
 
   alertEl.style.display = 'none';
+  // Enforce Gmail domain
+  if (!email.toLowerCase().endsWith('@gmail.com')) {
+    alertEl.textContent = 'Only Gmail addresses are allowed for login.';
+    alertEl.style.display = 'block';
+    showToast('Invalid email domain. Please use a @gmail.com address.', 'danger');
+    btn.disabled = false;
+    btn.innerHTML = '<span>Sign In</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    return;
+  }
   btn.disabled = true;
   btn.innerHTML = '<span>Signing in...</span>';
 
@@ -516,14 +500,26 @@ async function handleSignup(e) {
   }
 
   alertEl.style.display = 'none';
+  // Enforce Gmail domain for signup
+  if (!email.toLowerCase().endsWith('@gmail.com')) {
+    alertEl.textContent = 'Only Gmail addresses are allowed for signup.';
+    alertEl.style.display = 'block';
+    showToast('Invalid email domain. Please use a @gmail.com address.', 'danger');
+    btn.disabled = false;
+    btn.innerHTML = '<span>Create Account</span> <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>';
+    return;
+  }
   btn.disabled = true;
   btn.innerHTML = '<span>Creating account...</span>';
 
   try {
     const data = await API.signup(email, fullName, password, role);
-    state.currentUser = data.user;
-    showToast(`Account created. Welcome, ${data.user.full_name}!`, 'success');
-    renderApp();
+    // Clear any auto-set token/user to prevent immediate login
+    API.clearSession();
+    showToast(`Account created for ${fullName}. Please log in.`, 'success');
+    const loginEmailInput = document.getElementById('login-email');
+    if (loginEmailInput) loginEmailInput.value = email;
+    switchAuthMode('signin');
   } catch (err) {
     alertEl.textContent = err.message;
     alertEl.style.display = 'block';
@@ -677,10 +673,14 @@ function renderDocumentGrid(documents) {
           </div>
 
           <div class="doc-actions">
-            ${canRead ? `
+${canRead ? `
               <button class="btn btn-primary btn-sm" style="flex-grow: 1;" onclick="downloadDoc('${doc.id}', '${escapeHtml(doc.original_filename)}')">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Download
+              </button>
+              <button class="btn btn-warning btn-sm" style="flex-grow: 1; margin-left:0.5rem;" onclick="editDoc('${doc.id}', '${escapeHtml(doc.original_filename)}')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+                Edit
               </button>` : ''}
 
             ${isOwner || state.currentUser?.role === 'admin' ? `
@@ -712,18 +712,17 @@ window.downloadDoc = async function(docId, filename) {
   }
 };
 
-window.deleteDoc = async function(docId, filename) {
-  if (!confirm(`Are you sure you want to delete "${filename}"? All permissions will be terminated.`)) {
-    return;
-  }
-  try {
-    await API.deleteDocument(docId);
-    showToast(`Document "${filename}" deleted`, 'success');
-    loadDocuments();
-  } catch (err) {
-    showToast(err.message, 'danger');
-  }
+window.editDoc = async function(docId, filename) {
+  // Placeholder: Open the document in edit mode.
+  // In a full implementation this would fetch the encrypted document, decrypt it,
+  // and present an editable UI. For now we simply redirect to the document view.
+  showToast(`Opening ${filename} for editing...`, 'info');
+  // Example: switch to the viewer tab and load the document details.
+  switchTab('documents');
+  // Load the document and set an edit flag (implementation dependent).
+  // This stub demonstrates the UI hook.
 };
+
 
 // ════════ Document Upload ════════
 async function handleDocumentUpload(e) {
