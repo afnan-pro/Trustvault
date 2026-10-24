@@ -112,6 +112,48 @@ function initEventListeners() {
   if (tabSignup) tabSignup.addEventListener('click', () => switchAuthMode('signup'));
   if (switchSigninLink) switchSigninLink.addEventListener('click', () => switchAuthMode('signin'));
 
+  // Language Elaborate / Expand Dropdown
+  const langDropdown = document.getElementById('voltrex-lang-dropdown');
+  const langBtn = document.getElementById('voltrex-lang-btn');
+  const currentFlag = document.getElementById('current-lang-flag');
+  const currentText = document.getElementById('current-lang-text');
+
+  if (langBtn && langDropdown) {
+    langBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = langDropdown.classList.toggle('open');
+      langBtn.setAttribute('aria-expanded', isOpen);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!langDropdown.contains(e.target)) {
+        langDropdown.classList.remove('open');
+        langBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    const langOptions = langDropdown.querySelectorAll('.lang-option');
+    langOptions.forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const langCode = opt.getAttribute('data-lang');
+        const langFlag = opt.getAttribute('data-flag');
+        const langName = opt.getAttribute('data-name');
+
+        if (currentFlag) currentFlag.textContent = langFlag;
+        if (currentText) currentText.textContent = langCode;
+
+        langOptions.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+
+        langDropdown.classList.remove('open');
+        langBtn.setAttribute('aria-expanded', 'false');
+
+        showToast(`Language switched to ${langName} (${langCode})`, 'info');
+      });
+    });
+  }
+
   // Login Form
   const loginForm = document.getElementById('login-form');
   if (loginForm) {

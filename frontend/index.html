@@ -123,12 +123,65 @@
 
       <!-- RIGHT COLUMN: Auth Form & Controls -->
       <div class="voltrex-right">
-        <!-- Top Controls / Language & Clearance Indicator -->
+        <!-- Top Controls / Language Dropdown Menu -->
         <div class="voltrex-right-top">
-          <div class="voltrex-lang-pill">
-            <span class="lang-flag">🇬🇧</span>
-            <span class="lang-text">EN</span>
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          <div class="voltrex-lang-dropdown" id="voltrex-lang-dropdown">
+            <button type="button" class="voltrex-lang-pill" id="voltrex-lang-btn" aria-haspopup="true" aria-expanded="false" title="Change Language">
+              <span class="lang-flag" id="current-lang-flag">🇬🇧</span>
+              <span class="lang-text" id="current-lang-text">EN</span>
+              <svg class="lang-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="voltrex-lang-menu" id="voltrex-lang-menu">
+              <div class="lang-menu-header">Select Language</div>
+              <button type="button" class="lang-option active" data-lang="EN" data-flag="🇬🇧" data-name="English">
+                <span class="lang-option-flag">🇬🇧</span>
+                <span class="lang-option-name">English</span>
+                <span class="lang-option-code">EN</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="ES" data-flag="🇪🇸" data-name="Español">
+                <span class="lang-option-flag">🇪🇸</span>
+                <span class="lang-option-name">Español</span>
+                <span class="lang-option-code">ES</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="FR" data-flag="🇫🇷" data-name="Français">
+                <span class="lang-option-flag">🇫🇷</span>
+                <span class="lang-option-name">Français</span>
+                <span class="lang-option-code">FR</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="DE" data-flag="🇩🇪" data-name="Deutsch">
+                <span class="lang-option-flag">🇩🇪</span>
+                <span class="lang-option-name">Deutsch</span>
+                <span class="lang-option-code">DE</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="JA" data-flag="🇯🇵" data-name="日本語">
+                <span class="lang-option-flag">🇯🇵</span>
+                <span class="lang-option-name">日本語</span>
+                <span class="lang-option-code">JA</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="ZH" data-flag="🇨🇳" data-name="简体中文">
+                <span class="lang-option-flag">🇨🇳</span>
+                <span class="lang-option-name">简体中文</span>
+                <span class="lang-option-code">ZH</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="HI" data-flag="🇮🇳" data-name="हिन्दी">
+                <span class="lang-option-flag">🇮🇳</span>
+                <span class="lang-option-name">हिन्दी</span>
+                <span class="lang-option-code">HI</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="AR" data-flag="🇦🇪" data-name="العربية">
+                <span class="lang-option-flag">🇦🇪</span>
+                <span class="lang-option-name">العربية</span>
+                <span class="lang-option-code">AR</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -174,35 +227,6 @@
                   <button type="button" class="input-icon-btn" id="toggle-password-btn" title="Toggle password visibility">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                   </button>
-                </div>
-              </div>
-
-              <!-- Security Clearance (Matches Wrong Name red highlight in reference photo) -->
-              <div class="voltrex-field field-highlight-alt" id="wrap-login-clearance">
-                <label class="voltrex-label error-text" id="label-login-clearance">Security Clearance</label>
-                <div class="voltrex-input-box box-error">
-                  <input type="text" id="login-clearance" class="voltrex-input input-error-text" value="Top-Secret (Level 4 Def-Depth)" readonly>
-                  <span class="field-icon error" id="icon-login-clearance">✕</span>
-                </div>
-              </div>
-
-              <!-- Phone Verification (Matches +1 212 555 4567 in reference photo) -->
-              <div class="voltrex-field">
-                <div class="voltrex-input-box phone-box">
-                  <span class="phone-flag-prefix">🇺🇸 +1</span>
-                  <input type="text" id="login-phone" class="voltrex-input phone-input" value="212 555 4567" placeholder="Phone verification">
-                </div>
-              </div>
-
-              <!-- Account Vault Tier (Matches USD (Account currency) in reference photo) -->
-              <div class="voltrex-field">
-                <div class="voltrex-input-box select-box">
-                  <select id="login-vault-currency" class="voltrex-select">
-                    <option value="USD">USD (Account currency: High Assurance Vault)</option>
-                    <option value="EUR">EUR (GDPR Sovereign Vault)</option>
-                    <option value="GBP">GBP (FCA Compliance Vault)</option>
-                  </select>
-                  <svg class="select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
                 </div>
               </div>
 
