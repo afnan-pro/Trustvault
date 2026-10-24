@@ -368,7 +368,7 @@ p {
   align-items: center;
   justify-content: center;
   padding: 2rem 1.5rem;
-  background-color: var(--bg-canvas);
+  background-color: #27243d; /* Dark theme canvas from reference image */
 }
 
 .auth-card {
@@ -1341,4 +1341,909 @@ p {
     transform: translateX(0);
     opacity: 1;
   }
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   VOLTREX SPLIT-SCREEN AUTHENTICATION DESIGN SYSTEM
+   Exact recreation of the reference high-contrast dark UI
+   ═════════════════════════════════════════════════════════════════ */
+
+.voltrex-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 1040px;
+  width: 100%;
+  min-height: 640px;
+  border-radius: 28px;
+  background: #0d0f19;
+  box-shadow: 0 35px 100px -15px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Left Hero Column */
+.voltrex-left {
+  position: relative;
+  background: url('../img/hero_portrait.jpg') center/cover no-repeat;
+  min-height: 580px;
+  overflow: hidden;
+}
+
+.voltrex-left-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(13, 15, 25, 0.15) 30%, rgba(13, 15, 25, 0.96) 100%),
+              linear-gradient(to top, rgba(13, 15, 25, 0.95) 0%, transparent 60%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.25rem;
+}
+
+/* Top-Left Brand Logo */
+.voltrex-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.voltrex-logo-ring {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 4px solid #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+}
+
+.voltrex-logo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f59e0b;
+}
+
+.voltrex-brand-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+/* Floating Glassmorphic Crypto/Security Badges */
+.voltrex-stat-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 290px;
+}
+
+.stat-chip {
+  background: rgba(18, 20, 32, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 14px;
+  padding: 0.65rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+}
+
+.stat-chip-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-chip-icon.eth-gradient {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  color: #ffffff;
+}
+
+.stat-chip-icon.usdt-gradient {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+}
+
+.stat-chip-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.stat-chip-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+}
+
+.stat-chip-title {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.stat-chip-val {
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 0.72rem;
+}
+
+.stat-chip-sub {
+  color: #94a3b8;
+  font-size: 0.68rem;
+}
+
+.stat-chip-change.text-green {
+  color: #00e699;
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+
+/* Right Form Column */
+.voltrex-right {
+  background: #0d0f19;
+  padding: 2.25rem 2.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.voltrex-right-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.voltrex-lang-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.lang-flag {
+  font-size: 0.85rem;
+}
+
+.voltrex-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+/* Segmented Tab Pill Toggle (SIGN UP / LOG IN) */
+.voltrex-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #171927;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: 1.15rem;
+}
+
+.voltrex-tab {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 0;
+  color: #94a3b8;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.voltrex-tab.active {
+  background: #50446b; /* Exact violet active tab background from prompt photo */
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(80, 68, 107, 0.45);
+}
+
+/* 1-Click Persona Bar */
+.voltrex-personas-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+.personas-label {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.persona-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  border-radius: 6px;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.persona-chip:hover {
+  background: #00e699;
+  color: #0d1e16;
+  border-color: #00e699;
+  font-weight: 600;
+}
+
+/* Fields & Outlined Inputs */
+.voltrex-field {
+  margin-bottom: 0.85rem;
+}
+
+.voltrex-label {
+  display: block;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.voltrex-input-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9px;
+  transition: all 0.15s ease;
+}
+
+.voltrex-input-box:focus-within {
+  border-color: #00e699;
+  box-shadow: 0 0 0 1px #00e699;
+}
+
+.voltrex-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.65rem 0.85rem;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 0.825rem;
+  outline: none;
+}
+
+.voltrex-input::placeholder {
+  color: #64748b;
+}
+
+/* Field Status Icons (Checkmark & Red X) */
+.field-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.field-icon.success {
+  background: #00e699;
+  color: #0d1e16;
+}
+
+.field-icon.error {
+  background: #ff3366;
+  color: #ffffff;
+}
+
+/* Error Field Highlight (Exact match to "Wrong Name / Jonas [✕]" in reference image) */
+.voltrex-field.field-highlight-alt .voltrex-label.error-text {
+  color: #ff3366 !important;
+}
+
+.voltrex-input-box.box-error {
+  border-color: #ff3366 !important;
+  background: rgba(255, 51, 102, 0.03);
+}
+
+.input-error-text {
+  color: #ff3366 !important;
+}
+
+/* Phone verification field */
+.phone-box {
+  padding-left: 0.75rem;
+}
+
+.phone-flag-prefix {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  font-weight: 500;
+  padding-right: 0.65rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap;
+}
+
+.phone-input {
+  padding-left: 0.65rem;
+}
+
+/* Select Box */
+.select-box {
+  position: relative;
+}
+
+.voltrex-select {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.65rem 2rem 0.65rem 0.85rem;
+  color: #cbd5e1;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.voltrex-select option {
+  background: #171927;
+  color: #ffffff;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 0.85rem;
+  pointer-events: none;
+  color: #94a3b8;
+}
+
+/* Terms Checkbox */
+.voltrex-terms-row {
+  margin: 0.85rem 0 1.25rem;
+}
+
+.voltrex-check-label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  cursor: pointer;
+}
+
+.voltrex-check-label input[type="checkbox"] {
+  display: none;
+}
+
+.voltrex-check-custom {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #00e699;
+  border: 1px solid #00e699;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.voltrex-check-custom::after {
+  content: '✓';
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #0b1e16;
+}
+
+.voltrex-check-label input[type="checkbox"]:not(:checked) + .voltrex-check-custom {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.voltrex-check-label input[type="checkbox"]:not(:checked) + .voltrex-check-custom::after {
+  display: none;
+}
+
+.voltrex-check-text {
+  font-size: 0.74rem;
+  color: #cbd5e1;
+}
+
+.voltrex-link {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* Mint Green Submit Button (Exact match from reference photo) */
+.voltrex-btn-mint {
+  width: 100%;
+  background: #00e699; /* Vibrant mint green from prompt image */
+  color: #0b1e16;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 230, 153, 0.35);
+}
+
+.voltrex-btn-mint:hover {
+  background: #00ffaa;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(0, 230, 153, 0.5);
+}
+
+/* Responsive Split Screen */
+@media (max-width: 860px) {
+  .voltrex-card {
+    grid-template-columns: 1fr;
+  }
+  .voltrex-left {
+    min-height: 280px;
+  }
+  .voltrex-right {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   ENCRYPTION & SECURITY PAGE STYLES
+   ═════════════════════════════════════════════════════════════════ */
+
+.security-header-banner {
+  background: linear-gradient(135deg, rgba(30, 27, 50, 0.95), rgba(15, 23, 42, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-md);
+}
+
+.security-badge-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  color: #00e699;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.security-dot-live {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00e699;
+  box-shadow: 0 0 10px #00e699;
+  animation: pulseLive 2s infinite;
+}
+
+@keyframes pulseLive {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.security-header-content h2 {
+  color: #ffffff;
+}
+
+.security-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.pillar-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pillar-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.pillar-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.pillar-icon.eth-gradient {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  color: #ffffff;
+}
+
+.pillar-icon.usdt-gradient {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+}
+
+.pillar-icon.cyan-gradient {
+  background: linear-gradient(135deg, #06b6d4, #0284c7);
+  color: #ffffff;
+}
+
+.pillar-icon.purple-gradient {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  color: #ffffff;
+}
+
+.pillar-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--primary-accent);
+}
+
+.pillar-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.pillar-card p {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.pillar-specs {
+  display: flex;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 0.65rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+/* Cryptographic Simulator */
+.security-sim-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+
+.sim-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.sim-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  color: var(--success-text);
+  border-radius: 9999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+.sim-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 800px) {
+  .sim-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.crypto-meta-box {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 0.6rem;
+}
+
+.crypto-meta-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.crypto-meta-tag {
+  font-size: 0.68rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--border-subtle);
+  color: var(--text-body);
+}
+
+.crypto-meta-tag.tag-success {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success-border);
+}
+
+.crypto-meta-tag.tag-danger {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid var(--danger-border);
+}
+
+.crypto-hex-display {
+  font-size: 0.76rem;
+  word-break: break-all;
+  color: var(--text-main);
+  line-height: 1.4;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+}
+
+.ciphertext-box {
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+/* Merkle Chain Visualizer */
+.chain-nodes-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.chain-node {
+  min-width: 220px;
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.chain-node-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chain-block-num {
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: var(--text-main);
+}
+
+.chain-status-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--border-subtle);
+  color: var(--text-muted);
+}
+
+.chain-status-tag.verified {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success-border);
+}
+
+.chain-node-action {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary-accent);
+}
+
+.chain-node-hash {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  word-break: break-all;
+  line-height: 1.3;
+}
+
+.chain-connector {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+/* Watermark Sandbox */
+.watermark-sandbox-container {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.watermark-preview-box {
+  position: relative;
+  background: #ffffff;
+  padding: 2.5rem 2rem;
+  min-height: 220px;
+  overflow: hidden;
+}
+
+.watermark-doc-mockup h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #0f172a;
+}
+
+.watermark-doc-mockup p {
+  font-size: 0.82rem;
+  color: #334155;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.watermark-doc-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.watermark-overlay-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  pointer-events: none;
+  opacity: 0.16;
+  transform: rotate(-12deg) scale(1.1);
+}
+
+.wm-tile {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  text-align: center;
+  padding: 1rem;
+}
+
+.watermark-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--bg-surface-subtle);
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-body);
+  flex-wrap: wrap;
+}
+
+/* Threat Matrix */
+.threat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.threat-item {
+  background: var(--bg-surface-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.threat-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.threat-badge-id {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border: 1px solid var(--danger-border);
+}
+
+.threat-item p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.threat-item code {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
 }
