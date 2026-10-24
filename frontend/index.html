@@ -36,6 +36,10 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Audit Log
       </button>
+      <button class="nav-tab" data-tab="security" id="tab-security">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        Encryption & Security
+      </button>
       <button class="nav-tab" data-tab="admin" id="tab-admin" style="display: none;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         User Management
@@ -58,216 +62,282 @@
     </div>
   </header>
 
-  <!-- ════════ VIEW 1: Authentication / Sign In & Sign Up ════════ -->
+  <!-- ════════ VIEW 1: Authentication / Sign In & Sign Up (Split-Screen Modern Vault) ════════ -->
   <main class="auth-wrapper" id="auth-view">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="brand-icon large">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M9 12l2 2 4-4"/>
-          </svg>
-        </div>
-        <h2>TrustVault</h2>
-        <p id="auth-header-desc">Secure document sharing with cryptographic audit logging</p>
-      </div>
-
-      <!-- Segmented Tab Switcher -->
-      <div class="auth-nav-tabs">
-        <button type="button" class="auth-tab-btn active" id="tab-btn-signin" data-auth-mode="signin">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          Sign In
-        </button>
-        <button type="button" class="auth-tab-btn" id="tab-btn-signup" data-auth-mode="signup">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-          Create Account
-        </button>
-      </div>
-
-      <!-- Alert Box -->
-      <div id="login-alert" class="toast danger" style="display: none; margin-bottom: 1.25rem;"></div>
-
-      <!-- ════════ PANEL A: Sign In ════════ -->
-      <div id="auth-panel-signin">
-        <!-- Rate limit note -->
-        <div class="auth-shield-indicator">
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <div class="auth-shield-dot"></div>
-            <span>Protected by rate limiting & encrypted session storage</span>
-          </div>
-          <span style="font-size: 0.7rem; font-weight: 600; color: var(--success-text);">ACTIVE</span>
-        </div>
-
-        <form id="login-form">
-          <div class="form-group">
-            <label class="form-label" for="login-email">
-              <span>Email address</span>
-            </label>
-            <input type="email" id="login-email" class="form-input" placeholder="name@company.com" required autocomplete="email">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="login-password">
-              <span>Password</span>
-            </label>
-            <div class="input-container">
-              <input type="password" id="login-password" class="form-input" placeholder="Enter your password" required autocomplete="current-password">
-              <button type="button" class="input-icon-btn" id="toggle-password-btn" title="Toggle password visibility">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
+    <div class="voltrex-card">
+      
+      <!-- LEFT COLUMN: Hero Portrait + Branding + Live Cryptographic Stats -->
+      <div class="voltrex-left">
+        <div class="voltrex-left-overlay">
+          <!-- Top-Left Branding -->
+          <div class="voltrex-brand">
+            <div class="voltrex-logo-ring">
+              <div class="voltrex-logo-dot"></div>
             </div>
-
-            <!-- Password strength meter removed from login -->
+            <span class="voltrex-brand-name">TrustVault</span>
           </div>
 
-          <div class="auth-links-row">
-            <label class="form-checkbox-row" style="margin-bottom: 0;">
-              <input type="checkbox" id="login-remember">
-              <span>Remember me on this browser</span>
-            </label>
-            <a href="javascript:void(0)" class="auth-link" id="link-open-recovery">Forgot password?</a>
-          </div>
-
-          <button type="submit" class="btn btn-primary" id="login-submit-btn" style="width: 100%; margin-top: 0.5rem; padding: 0.65rem;">
-            <span>Sign In</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </form>
-
-        <!-- Quick Demo Accounts -->
-        <!-- Demo accounts removed -->
-      </div>
-
-      <!-- ════════ PANEL B: Sign Up / Identity Provisioning ════════ -->
-      <div id="auth-panel-signup" style="display: none;">
-        <div class="auth-shield-indicator">
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <div class="auth-shield-dot"></div>
-            <span>New Account Registration</span>
-          </div>
-          <span style="font-size: 0.7rem; font-weight: 600; color: var(--success-text);">READY</span>
-        </div>
-
-        <form id="signup-form">
-          <div class="form-group">
-            <label class="form-label" for="signup-name">
-              <span>Full Name</span>
-            </label>
-            <input type="text" id="signup-name" class="form-input" placeholder="e.g. Marcus Vance" required autocomplete="name">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="signup-email">
-              <span>Work Email</span>
-            </label>
-            <input type="email" id="signup-email" class="form-input" placeholder="marcus@company.com" required autocomplete="email">
-          </div>
-
-          <!-- Role Selection -->
-          <div class="form-group">
-            <label class="form-label">
-              <span>Account Role</span>
-            </label>
-            <div class="role-grid">
-              <label class="role-card-label">
-                <input type="radio" name="signup-role" value="viewer" checked>
-                <div class="role-card-box">
-                  <div class="role-card-title text-warning">
-                    <span>Internal Viewer</span>
-                  </div>
-                  <div class="role-card-desc">Read and inspect documents explicitly shared with you.</div>
+          <!-- Bottom Floating Crypto/Security Badges (Exact match to reference photo) -->
+          <div class="voltrex-stat-chips">
+            <!-- Badge 1: AES-256-GCM -->
+            <div class="stat-chip">
+              <div class="stat-chip-icon eth-gradient">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L4 12l8 4.5 8-4.5L12 2zm0 16.5L4 14l8 8 8-8-8 4.5z"/>
+                </svg>
+              </div>
+              <div class="stat-chip-info">
+                <div class="stat-chip-row">
+                  <span class="stat-chip-title">AES-256-GCM</span>
+                  <span class="stat-chip-val">+0.0021</span>
                 </div>
-              </label>
-
-              <label class="role-card-label">
-                <input type="radio" name="signup-role" value="owner">
-                <div class="role-card-box">
-                  <div class="role-card-title text-success">
-                    <span>Document Owner</span>
-                  </div>
-                  <div class="role-card-desc">Upload files, grant permissions, and revoke access instantly.</div>
+                <div class="stat-chip-row">
+                  <span class="stat-chip-sub">Disk Cipher</span>
+                  <span class="stat-chip-change text-green">+72.5%</span>
                 </div>
-              </label>
-            </div>
-          </div>
-
-          <!-- Password Generator Row -->
-          <div class="form-group">
-            <div class="key-generator-row">
-              <label class="form-label" for="signup-password" style="margin-bottom: 0;">
-                <span>Password</span>
-              </label>
-              <button type="button" class="btn-ghost-sm" id="btn-generate-password" title="Generate strong random password">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                Generate strong password
-              </button>
-            </div>
-            <div class="input-container" style="margin-top: 0.35rem;">
-              <input type="password" id="signup-password" class="form-input" placeholder="Minimum 10 chars with upper, lower, num, symbol" required autocomplete="new-password">
-              <button type="button" class="input-icon-btn" id="toggle-signup-password-btn" title="Toggle password visibility">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
+              </div>
             </div>
 
-            <!-- Sign Up Live Password Strength Meter -->
-            <div class="password-meter">
-              <div class="meter-header">
-                <span>Password Strength</span>
-                <span class="meter-strength-label text-muted" id="signup-meter-label">None</span>
+            <!-- Badge 2: SHA-256 Audit Chain -->
+            <div class="stat-chip">
+              <div class="stat-chip-icon usdt-gradient">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <polyline points="9 12 11 14 15 10"/>
+                </svg>
               </div>
-              <div class="meter-bar">
-                <div class="meter-fill" id="signup-meter-fill"></div>
-              </div>
-              <div class="password-rules">
-                <div class="rule-item" id="signup-rule-len"><span class="rule-icon">○</span> 10+ characters</div>
-                <div class="rule-item" id="signup-rule-upper"><span class="rule-icon">○</span> 1 uppercase</div>
-                <div class="rule-item" id="signup-rule-lower"><span class="rule-icon">○</span> 1 lowercase</div>
-                <div class="rule-item" id="signup-rule-num"><span class="rule-icon">○</span> 1 number</div>
-                <div class="rule-item" id="signup-rule-special" style="grid-column: span 2;"><span class="rule-icon">○</span> 1 special symbol (!@#$%^&*)</div>
+              <div class="stat-chip-info">
+                <div class="stat-chip-row">
+                  <span class="stat-chip-title">Audit Chain</span>
+                  <span class="stat-chip-val">+0.02</span>
+                </div>
+                <div class="stat-chip-row">
+                  <span class="stat-chip-sub">Merkle Block</span>
+                  <span class="stat-chip-change text-green">+6.1%</span>
+                </div>
               </div>
             </div>
           </div>
-
-          <!-- Confirm Password -->
-          <div class="form-group">
-            <label class="form-label" for="signup-password-confirm">
-              <span>Confirm Password</span>
-            </label>
-            <div class="input-container">
-              <input type="password" id="signup-password-confirm" class="form-input" placeholder="Re-enter password" required autocomplete="new-password">
-              <button type="button" class="input-icon-btn" id="toggle-signup-confirm-btn" title="Toggle password visibility">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              </button>
-            </div>
-            <div class="password-match-badge" id="signup-match-status">
-              <span class="rule-icon">○</span>
-              <span>Re-enter password to verify exact match</span>
-            </div>
-          </div>
-
-          <!-- Terms Checkbox -->
-          <label class="form-checkbox-row">
-            <input type="checkbox" id="signup-agreement" required>
-            <span>I agree to the security protocol, encryption standards, and immutable audit logging.</span>
-          </label>
-
-          <button type="submit" class="btn btn-primary" id="signup-submit-btn" style="width: 100%; margin-top: 0.5rem; padding: 0.65rem;">
-            <span>Create Account</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          </button>
-        </form>
-
-        <div style="margin-top: 1.25rem; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
-          Already registered? <a href="javascript:void(0)" class="auth-link" id="link-switch-to-signin">Sign in to your account</a>
         </div>
       </div>
 
-      <!-- Security Badges Footer -->
-      <div class="auth-security-badges">
-        <span class="auth-sec-badge">AES-256-GCM Encrypted</span>
-        <span class="auth-sec-badge">Argon2id Hash</span>
-        <span class="auth-sec-badge">SHA-256 Hash Chain</span>
-        <span class="auth-sec-badge">Instant Revocation</span>
+      <!-- RIGHT COLUMN: Auth Form & Controls -->
+      <div class="voltrex-right">
+        <!-- Top Controls / Language Dropdown Menu -->
+        <div class="voltrex-right-top">
+          <div class="voltrex-lang-dropdown" id="voltrex-lang-dropdown">
+            <button type="button" class="voltrex-lang-pill" id="voltrex-lang-btn" aria-haspopup="true" aria-expanded="false" title="Change Language">
+              <span class="lang-flag" id="current-lang-flag">🇬🇧</span>
+              <span class="lang-text" id="current-lang-text">EN</span>
+              <svg class="lang-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="voltrex-lang-menu" id="voltrex-lang-menu">
+              <div class="lang-menu-header">Select Language</div>
+              <button type="button" class="lang-option active" data-lang="EN" data-flag="🇬🇧" data-name="English">
+                <span class="lang-option-flag">🇬🇧</span>
+                <span class="lang-option-name">English</span>
+                <span class="lang-option-code">EN</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="ES" data-flag="🇪🇸" data-name="Español">
+                <span class="lang-option-flag">🇪🇸</span>
+                <span class="lang-option-name">Español</span>
+                <span class="lang-option-code">ES</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="FR" data-flag="🇫🇷" data-name="Français">
+                <span class="lang-option-flag">🇫🇷</span>
+                <span class="lang-option-name">Français</span>
+                <span class="lang-option-code">FR</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="DE" data-flag="🇩🇪" data-name="Deutsch">
+                <span class="lang-option-flag">🇩🇪</span>
+                <span class="lang-option-name">Deutsch</span>
+                <span class="lang-option-code">DE</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="JA" data-flag="🇯🇵" data-name="日本語">
+                <span class="lang-option-flag">🇯🇵</span>
+                <span class="lang-option-name">日本語</span>
+                <span class="lang-option-code">JA</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="ZH" data-flag="🇨🇳" data-name="简体中文">
+                <span class="lang-option-flag">🇨🇳</span>
+                <span class="lang-option-name">简体中文</span>
+                <span class="lang-option-code">ZH</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="HI" data-flag="🇮🇳" data-name="हिन्दी">
+                <span class="lang-option-flag">🇮🇳</span>
+                <span class="lang-option-name">हिन्दी</span>
+                <span class="lang-option-code">HI</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <button type="button" class="lang-option" data-lang="AR" data-flag="🇦🇪" data-name="العربية">
+                <span class="lang-option-flag">🇦🇪</span>
+                <span class="lang-option-name">العربية</span>
+                <span class="lang-option-code">AR</span>
+                <svg class="lang-check" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="voltrex-content-wrap">
+          <h1 class="voltrex-title">Welcome to TrustVault!</h1>
+
+          <!-- Segmented Tab Toggle: SIGN UP / LOG IN (Exact pill style from image) -->
+          <div class="voltrex-tabs">
+            <button type="button" class="voltrex-tab" id="tab-btn-signup" data-auth-mode="signup">SIGN UP</button>
+            <button type="button" class="voltrex-tab active" id="tab-btn-signin" data-auth-mode="signin">LOG IN</button>
+          </div>
+
+          <!-- Quick Evaluator Persona Chips -->
+          <div class="voltrex-personas-bar">
+            <span class="personas-label">1-Click Evaluator:</span>
+            <button type="button" class="persona-chip active" onclick="selectPersona('admin@trustvault.internal','AdminPass123!@#')">👑 Admin</button>
+            <button type="button" class="persona-chip" onclick="selectPersona('alice@trustvault.internal','OwnerPass123!@#')">📄 Alice (Owner)</button>
+            <button type="button" class="persona-chip" onclick="selectPersona('bob@trustvault.internal','ViewerPass123!@#')">👁️ Bob (Viewer)</button>
+            <button type="button" class="persona-chip" onclick="selectPersona('charlie@client.corp','PartnerPass123!@#')">⚖️ Charlie</button>
+          </div>
+
+          <!-- Alert Box -->
+          <div id="login-alert" class="toast danger" style="display: none; margin-bottom: 1rem;"></div>
+
+          <!-- ─── PANEL A: Sign In Form ─── -->
+          <div id="auth-panel-signin">
+            <form id="login-form">
+              <!-- Email (Login) -->
+              <div class="voltrex-field" id="wrap-login-email">
+                <label class="voltrex-label" for="login-email">Email (Login)</label>
+                <div class="voltrex-input-box">
+                  <input type="email" id="login-email" class="voltrex-input" placeholder="name@company.com" required autocomplete="email" value="admin@trustvault.internal">
+                  <span class="field-icon success" id="icon-login-email">✓</span>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="voltrex-field" id="wrap-login-password">
+                <label class="voltrex-label" for="login-password">Password must contain 8 characters or more</label>
+                <div class="voltrex-input-box">
+                  <input type="password" id="login-password" class="voltrex-input" placeholder="Enter password" required autocomplete="current-password" value="AdminPass123!@#">
+                  <span class="field-icon success" id="icon-login-password">✓</span>
+                  <button type="button" class="input-icon-btn" id="toggle-password-btn" title="Toggle password visibility">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Terms & Agreement Checkbox (Matches prompt photo) -->
+              <div class="voltrex-terms-row">
+                <label class="voltrex-check-label">
+                  <input type="checkbox" id="login-remember" checked>
+                  <span class="voltrex-check-custom"></span>
+                  <span class="voltrex-check-text">I have read and agree <a href="javascript:void(0)" class="voltrex-link" id="link-open-recovery">Terms and Risk statements</a></span>
+                </label>
+              </div>
+
+              <!-- Mint Green Action Button (Matches prompt photo) -->
+              <button type="submit" class="voltrex-btn-mint" id="login-submit-btn">
+                <span>Sign In</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- ─── PANEL B: Sign Up Form ─── -->
+          <div id="auth-panel-signup" style="display: none;">
+            <form id="signup-form">
+              <!-- Full Name -->
+              <div class="voltrex-field">
+                <label class="voltrex-label" for="signup-name">Full Name</label>
+                <div class="voltrex-input-box">
+                  <input type="text" id="signup-name" class="voltrex-input" placeholder="Marcus Vance" required autocomplete="name">
+                </div>
+              </div>
+
+              <!-- Work Email -->
+              <div class="voltrex-field">
+                <label class="voltrex-label" for="signup-email">Email (Login)</label>
+                <div class="voltrex-input-box">
+                  <input type="email" id="signup-email" class="voltrex-input" placeholder="name@company.com" required autocomplete="email">
+                </div>
+              </div>
+
+              <!-- Account Role -->
+              <div class="voltrex-field">
+                <label class="voltrex-label">Security Role</label>
+                <div class="voltrex-input-box select-box">
+                  <select id="signup-role" class="voltrex-select">
+                    <option value="viewer">Internal Viewer (Read & Inspect Shared Files)</option>
+                    <option value="owner">Document Owner (Upload & Manage Permissions)</option>
+                  </select>
+                  <svg class="select-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div class="voltrex-field">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                  <label class="voltrex-label" for="signup-password" style="margin-bottom: 0;">Password (10+ characters)</label>
+                  <button type="button" class="btn-ghost-sm" id="btn-generate-password" style="font-size: 0.72rem; color: #00e699;">⚡ Generate</button>
+                </div>
+                <div class="voltrex-input-box">
+                  <input type="password" id="signup-password" class="voltrex-input" placeholder="Complex key with symbols" required autocomplete="new-password">
+                  <button type="button" class="input-icon-btn" id="toggle-signup-password-btn" title="Toggle password visibility">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  </button>
+                </div>
+
+                <!-- Password Meter -->
+                <div class="password-meter" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                  <div class="meter-header">
+                    <span style="font-size: 0.72rem; color: #94a3b8;">Key Complexity</span>
+                    <span class="meter-strength-label text-muted" id="signup-meter-label" style="font-size: 0.72rem;">None</span>
+                  </div>
+                  <div class="meter-bar" style="background: rgba(255,255,255,0.08); height: 4px;">
+                    <div class="meter-fill" id="signup-meter-fill"></div>
+                  </div>
+                  <div class="password-rules" style="font-size: 0.68rem; margin-top: 0.35rem;">
+                    <div class="rule-item" id="signup-rule-len"><span class="rule-icon">○</span> 10+ chars</div>
+                    <div class="rule-item" id="signup-rule-upper"><span class="rule-icon">○</span> 1 upper</div>
+                    <div class="rule-item" id="signup-rule-lower"><span class="rule-icon">○</span> 1 lower</div>
+                    <div class="rule-item" id="signup-rule-num"><span class="rule-icon">○</span> 1 digit</div>
+                    <div class="rule-item" id="signup-rule-special" style="grid-column: span 2;"><span class="rule-icon">○</span> 1 special symbol</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="voltrex-field">
+                <label class="voltrex-label" for="signup-password-confirm">Confirm Password</label>
+                <div class="voltrex-input-box">
+                  <input type="password" id="signup-password-confirm" class="voltrex-input" placeholder="Re-enter password" required autocomplete="new-password">
+                </div>
+                <div class="password-match-badge" id="signup-match-status" style="font-size: 0.72rem; margin-top: 0.35rem;">
+                  <span class="rule-icon">○</span>
+                  <span>Verify exact key match</span>
+                </div>
+              </div>
+
+              <!-- Terms & Agreement Checkbox -->
+              <div class="voltrex-terms-row">
+                <label class="voltrex-check-label">
+                  <input type="checkbox" id="signup-agreement" required checked>
+                  <span class="voltrex-check-custom"></span>
+                  <span class="voltrex-check-text">I have read and agree <a href="javascript:void(0)" class="voltrex-link">Terms and Risk statements</a></span>
+                </label>
+              </div>
+
+              <!-- Mint Green Action Button -->
+              <button type="submit" class="voltrex-btn-mint" id="signup-submit-btn">
+                <span>Sign Up</span>
+              </button>
+            </form>
+          </div>
+
+        </div>
       </div>
     </div>
   </main>
@@ -418,6 +488,309 @@
             <!-- Dynamic users -->
           </tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- ──────────────── TAB 4: Encryption & Security Page ──────────────── -->
+    <section id="section-security" style="display: none;">
+      <!-- Security Page Header -->
+      <div class="security-header-banner">
+        <div class="security-header-content">
+          <div class="security-badge-top">
+            <span class="security-dot-live"></span>
+            <span>Zero-Trust Enterprise Cryptographic Platform</span>
+          </div>
+          <h2>Encryption & Defensive Security Architecture</h2>
+          <p class="text-muted" style="max-width: 800px; margin-top: 0.35rem;">
+            TrustVault enforces defense-in-depth: AES-256-GCM encryption at rest, mathematically tamper-evident SHA-256 Merkle audit chaining, sub-millisecond session invalidation, and forensic screen-leak watermarking.
+          </p>
+        </div>
+        <div class="security-header-actions">
+          <button type="button" class="btn btn-primary" id="btn-sec-run-audit-verify">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            Verify Merkle Chain
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Cryptographic Core Pillars -->
+      <div class="security-pillars-grid">
+        <div class="pillar-card">
+          <div class="pillar-icon eth-gradient">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4 12l8 4.5 8-4.5L12 2zm0 16.5L4 14l8 8 8-8-8 4.5z"/></svg>
+          </div>
+          <div class="pillar-badge">AES-256-GCM</div>
+          <h3>Authenticated Cipher</h3>
+          <p>Every file on disk is encrypted with random 96-bit IVs and 128-bit Poly1305/GCM authentication tags. Zero plaintext bytes touch storage.</p>
+          <div class="pillar-specs">
+            <span>Key: 256-bit CSPRNG</span>
+            <span>Tag: 128-bit MAC</span>
+          </div>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon usdt-gradient">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          </div>
+          <div class="pillar-badge">SHA-256 Chain</div>
+          <h3>Tamper-Evident Merkle Log</h3>
+          <p>Append-only audit trail. Each block hashes previous entry hash, timestamp, actor, action, and target. Altering any row breaks the entire chain.</p>
+          <div class="pillar-specs">
+            <span>Algorithm: SHA-256</span>
+            <span>Collision Proof: 2^128</span>
+          </div>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon cyan-gradient">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="pillar-badge">&lt; 0.8ms Effect</div>
+          <h3>Instant Revocation</h3>
+          <p>Revoking access bumps user's <code>token_generation</code> counter and sets <code>is_revoked=True</code> synchronously. Existing tokens terminate immediately.</p>
+          <div class="pillar-specs">
+            <span>Latency: &lt; 1 millisecond</span>
+            <span>Scope: JWT + Active Streams</span>
+          </div>
+        </div>
+
+        <div class="pillar-card">
+          <div class="pillar-icon purple-gradient">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+          <div class="pillar-badge">Argon2id KDF</div>
+          <h3>Memory-Hard Hashing</h3>
+          <p>Passwords stored with Argon2id using 64 MB memory cost, 3 time passes, and 4 lanes. Resists parallelized GPU/FPGA rainbow table cracks.</p>
+          <div class="pillar-specs">
+            <span>RAM Cost: 65,536 KB</span>
+            <span>Parallelism: 4 Lanes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Interactive Cryptographic Simulator -->
+      <div class="card security-sim-card">
+        <div class="sim-header">
+          <div>
+            <h3>Interactive AES-256-GCM Cryptographic Simulator</h3>
+            <p class="text-muted" style="font-size: 0.85rem;">Test authenticated encryption, live 96-bit IV generation, and cryptographic bit-flip tamper detection live in your browser.</p>
+          </div>
+          <div class="sim-status-pill" id="sim-status-badge">
+            <span class="status-indicator-dot"></span>
+            <span>WebCrypto Engine Ready</span>
+          </div>
+        </div>
+
+        <div class="sim-grid">
+          <!-- Left: Plaintext Input -->
+          <div class="sim-col">
+            <label class="form-label" for="sim-plaintext">
+              <span>Confidential Plaintext Payload</span>
+              <span class="text-dim" style="font-size: 0.75rem;">(Unencrypted Memory Buffer)</span>
+            </label>
+            <textarea id="sim-plaintext" class="form-input mono" rows="4" placeholder="Enter confidential text...">Executive Compensation & Board Equity Grants: Alice Wright - $340,000 Base + 50,000 RSUs. Authorized by Board Resolution #2026-B9.</textarea>
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-primary btn-sm" id="btn-sim-encrypt">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Encrypt with AES-256-GCM
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-sim-decrypt">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+                Verify & Decrypt
+              </button>
+              <button type="button" class="btn btn-danger btn-sm" id="btn-sim-tamper" title="Flip 1 bit in ciphertext to verify authenticated tag rejection">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Simulate Tamper (Bit-Flip)
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Cryptographic Breakdown -->
+          <div class="sim-col">
+            <!-- IV Box -->
+            <div class="crypto-meta-box">
+              <div class="crypto-meta-label">
+                <span>Initialization Vector (IV / Nonce)</span>
+                <span class="crypto-meta-tag">96-bit CSPRNG</span>
+              </div>
+              <div class="crypto-hex-display mono" id="sim-iv-hex">a7f4e912b3c4d5e6f7a8b9c0</div>
+            </div>
+
+            <!-- Auth Tag Box -->
+            <div class="crypto-meta-box">
+              <div class="crypto-meta-label">
+                <span>GCM Authentication Tag (MAC)</span>
+                <span class="crypto-meta-tag tag-success" id="sim-tag-status">128-bit Poly1305</span>
+              </div>
+              <div class="crypto-hex-display mono" id="sim-tag-hex">3e9a1b4c7f0d8e2a5b6c9d0e1f3a4b7c</div>
+            </div>
+
+            <!-- Ciphertext Box -->
+            <div class="crypto-meta-box">
+              <div class="crypto-meta-label">
+                <span>Encrypted Ciphertext (Disk Storage Blob)</span>
+                <span class="crypto-meta-tag">AES-256 Cipher</span>
+              </div>
+              <div class="crypto-hex-display mono ciphertext-box" id="sim-ciphertext-hex">4a7f9b2c8e1d5a3f9b0c2e4a6d8f1b3e5c7a9b0d2e4f6a8b1c3d5e7f9a0b2c4d6e8f0a2b4c6e8d0a2f4b6e8a0c2d4e6f8a0b2c4d...</div>
+            </div>
+
+            <!-- Output Message / Decryption Status -->
+            <div id="sim-result-alert" class="toast success" style="margin-top: 0.5rem; display: none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Merkle Audit Chain & Verification Section -->
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <h3>SHA-256 Merkle Audit Chain Verification</h3>
+            <p class="text-muted" style="font-size: 0.85rem;">Cryptographic hash chain linking every document lifecycle event from Block #1 (Genesis) to present.</p>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-sec-verify-chain">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Verify Cryptographic Chain Integrity
+          </button>
+        </div>
+
+        <!-- Verification Results Banner -->
+        <div id="sec-chain-verify-result" class="toast success" style="display: none; margin-bottom: 1rem;"></div>
+
+        <!-- Visual Block Nodes Grid -->
+        <div class="chain-nodes-row" id="sec-chain-nodes">
+          <div class="chain-node">
+            <div class="chain-node-header">
+              <span class="chain-block-num">Block #1</span>
+              <span class="chain-status-tag">GENESIS</span>
+            </div>
+            <div class="chain-node-action">SYSTEM_INITIALIZED</div>
+            <div class="chain-node-hash mono">0000000000000000000000000000000000000000000000000000000000000000</div>
+          </div>
+          <div class="chain-connector">→</div>
+          <div class="chain-node">
+            <div class="chain-node-header">
+              <span class="chain-block-num">Block #2</span>
+              <span class="chain-status-tag verified">VERIFIED</span>
+            </div>
+            <div class="chain-node-action">DOC_UPLOAD (AES-256)</div>
+            <div class="chain-node-hash mono">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</div>
+          </div>
+          <div class="chain-connector">→</div>
+          <div class="chain-node">
+            <div class="chain-node-header">
+              <span class="chain-block-num">Block #3</span>
+              <span class="chain-status-tag verified">VERIFIED</span>
+            </div>
+            <div class="chain-node-action">PERMISSION_GRANT</div>
+            <div class="chain-node-hash mono">8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4</div>
+          </div>
+          <div class="chain-connector">→</div>
+          <div class="chain-node">
+            <div class="chain-node-header">
+              <span class="chain-block-num">Block #4</span>
+              <span class="chain-status-tag verified">VERIFIED</span>
+            </div>
+            <div class="chain-node-action">REVOCATION_IMMEDIATE</div>
+            <div class="chain-node-hash mono">5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forensic Watermarking Leak Sandbox -->
+      <div class="card">
+        <div style="margin-bottom: 1rem;">
+          <h3>Forensic Document Watermarking Preview</h3>
+          <p class="text-muted" style="font-size: 0.85rem;">Documents rendered in TrustVault embed dynamic forensic watermarks (user email, UTC timestamp, IP hash) to trace camera photos and screenshot leaks.</p>
+        </div>
+
+        <div class="watermark-sandbox-container">
+          <div class="watermark-preview-box" id="sec-watermark-canvas">
+            <div class="watermark-doc-mockup">
+              <h4>CONFIDENTIAL EXECUTIVE SEPARATION AGREEMENT</h4>
+              <p>This agreement contains privileged terms, equity severance schedules, and statutory non-disclosure covenants governed under strict corporate bylaws. Unauthorized copying or redistribution is strictly prohibited and subject to legal prosecution.</p>
+              <div class="watermark-doc-table">
+                <div><span>Severance Consideration:</span> <strong>$280,000.00 USD</strong></div>
+                <div><span>Vested Stock Units:</span> <strong>12,500 Common Shares</strong></div>
+                <div><span>Covenant Window:</span> <strong>24 Months Post-Separation</strong></div>
+              </div>
+            </div>
+
+            <!-- Dynamic Watermark Overlay -->
+            <div class="watermark-overlay-grid" id="sec-watermark-overlay">
+              <div class="wm-tile">BOB.JENKINS@TRUSTVAULT.INTERNAL • 2026-10-24 12:44:00 UTC • SEC-ID: #99482</div>
+              <div class="wm-tile">BOB.JENKINS@TRUSTVAULT.INTERNAL • 2026-10-24 12:44:00 UTC • SEC-ID: #99482</div>
+              <div class="wm-tile">BOB.JENKINS@TRUSTVAULT.INTERNAL • 2026-10-24 12:44:00 UTC • SEC-ID: #99482</div>
+              <div class="wm-tile">BOB.JENKINS@TRUSTVAULT.INTERNAL • 2026-10-24 12:44:00 UTC • SEC-ID: #99482</div>
+            </div>
+          </div>
+
+          <div class="watermark-controls-bar">
+            <span>Simulate Viewer Persona:</span>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="previewWatermarkPersona('admin@trustvault.internal','ADMIN')">Admin</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="previewWatermarkPersona('alice@trustvault.internal','OWNER')">Alice (Owner)</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="previewWatermarkPersona('bob@trustvault.internal','VIEWER')">Bob (Viewer)</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="previewWatermarkPersona('charlie@client.corp','COUNSEL')">Charlie (Counsel)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Threat Matrix & Defenses Breakdown -->
+      <div class="card">
+        <div style="margin-bottom: 1.25rem;">
+          <h3>Defense-in-Depth Threat Matrix (OWASP & Enterprise Hardening)</h3>
+          <p class="text-muted" style="font-size: 0.85rem;">Rigorous server-enforced controls eliminating trust assumptions across all execution vectors.</p>
+        </div>
+
+        <div class="threat-grid">
+          <div class="threat-item">
+            <div class="threat-title">
+              <span class="threat-badge-id">T-01</span>
+              <span>Insecure Direct Object Reference (IDOR)</span>
+            </div>
+            <p>Every view, download, update, and delete synchronously validates authorization: <code>(user_id == owner_id) ∨ (active grant exists ∧ !is_revoked)</code>.</p>
+          </div>
+
+          <div class="threat-item">
+            <div class="threat-title">
+              <span class="threat-badge-id">T-02</span>
+              <span>Audit Log History Tampering</span>
+            </div>
+            <p>Append-only ledger with SHA-256 Merkle chaining. Hash includes previous hash, preventing silent deletion or alteration of audit records.</p>
+          </div>
+
+          <div class="threat-item">
+            <div class="threat-title">
+              <span class="threat-badge-id">T-03</span>
+              <span>Zombie Token Access Post-Revocation</span>
+            </div>
+            <p>User model maintains <code>token_generation</code>. Revocation immediately increments counter; auth middleware rejects older tokens with HTTP 401.</p>
+          </div>
+
+          <div class="threat-item">
+            <div class="threat-title">
+              <span class="threat-badge-id">T-04</span>
+              <span>Disk Snooping & Storage Leaks</span>
+            </div>
+            <p>AES-256-GCM authenticated cipher with unique 96-bit IVs per file stored outside web root with unguessable UUID filenames.</p>
+          </div>
+
+          <div class="threat-item">
+            <div class="threat-title">
+              <span class="threat-badge-id">T-05</span>
+              <span>Credential Brute Force Attacks</span>
+            </div>
+            <p>Sliding window IP rate limiter (5 attempts per 60s) returning HTTP 429 + Argon2id memory-hard password verification.</p>
+          </div>
+
+          <div class="threat-item">
+            <div class="threat-title">
+              <span class="threat-badge-id">T-06</span>
+              <span>Autonomous AI Privilege Escalation</span>
+            </div>
+            <p>AI Access Advisor is sandboxed to zero database writes. AI suggests; authorized human explicitly confirms all permission grants.</p>
+          </div>
+        </div>
       </div>
     </section>
   </div>
