@@ -10,11 +10,16 @@ load_dotenv()
 
 # Base paths
 BASE_DIR = Path(__file__).resolve().parent.parent
-UPLOAD_DIR = BASE_DIR.parent / "uploads"
-UPLOAD_DIR.mkdir(exist_ok=True)
+if os.getenv("VERCEL"):
+    UPLOAD_DIR = Path("/tmp/uploads")
+    DEFAULT_DB_FILE = "/tmp/trustvault.db"
+else:
+    UPLOAD_DIR = BASE_DIR.parent / "uploads"
+    DEFAULT_DB_FILE = (BASE_DIR / "trustvault.db").as_posix()
+
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Database — defaults to local SQLite for instant zero-dependency execution, or PostgreSQL via env
-DEFAULT_DB_FILE = (BASE_DIR / "trustvault.db").as_posix()
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     f"sqlite+aiosqlite:///{DEFAULT_DB_FILE}"

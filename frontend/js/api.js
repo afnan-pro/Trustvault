@@ -8,11 +8,14 @@ const API = {
   // - If accessed from FastAPI (port 8000), use same-origin relative URLs
   // - If accessed from Live Server (port 5500), Vite (5173), or file://, target http://127.0.0.1:8000
   baseUrl: (function() {
-    if (window.location.protocol.startsWith('http') && window.location.port === '8000') {
+    // If running on remote domain (e.g. *.vercel.app) or FastAPI direct port 8000, use same-origin relative URLs
+    if (window.location.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
       return '';
     }
-    const host = window.location.hostname || '127.0.0.1';
-    return `http://${host === 'localhost' ? 'localhost' : '127.0.0.1'}:8000`;
+    if (window.location.port === '8000') {
+      return '';
+    }
+    return 'http://127.0.0.1:8000';
   })(),
 
   getUrl(endpoint) {

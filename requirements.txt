@@ -1,0 +1,30 @@
+# FastAPI & Server
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+
+# Database
+sqlalchemy==2.0.35
+asyncpg==0.29.0
+alembic==1.13.2
+aiosqlite>=0.20.0
+
+# Authentication
+pyjwt==2.9.0
+argon2-cffi==23.1.0
+python-jose[cryptography]==3.3.0
+
+# Security
+cryptography==43.0.1
+slowapi==0.1.9
+
+# Validation
+pydantic==2.9.2
+pydantic[email]
+email-validator==2.2.0
+
+# File handling
+aiofiles==24.1.0
+
+# Utilities
+python-dotenv==1.0.1
